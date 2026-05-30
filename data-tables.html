@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Tables | U.S. Drought Monitor</title>
+  <meta name="theme-color" content="#da3910" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  
+</head>
+<body>
+
+  <header class="usdm-header">
+    <div class="usdm-header-inner">
+      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
+    </div>
+  </header>
+
+  <nav class="usdm-nav" aria-label="Primary">
+    <div class="usdm-nav-inner">
+      <a href="index.html">Current</a>
+      <a href="maps.html">Maps</a>
+      <a href="data.html" class="active">Data</a>
+      <a href="summary.html">Summary</a>
+      <a href="about.html">About</a>
+      <a href="conditions.html">Conditions & Outlooks</a>
+      <a href="#">Ag in Drought</a>
+      <a href="#">En Español</a>
+      <a href="#">NADM</a>
+    </div>
+  </nav>
+
+  <main class="usdm-main">
+<div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="data.html">Data</a> <span class="sep">/</span> Data Tables</div>
+
+    <h1 class="page-title">Data Tables</h1>
+
+    <p style="font-size:16.5px;max-width:80ch;color:#3a3431;">
+      Percent of area in each U.S. Drought Monitor category, broken down by state, for the
+      most recent map. Use the controls below to switch between weeks or change the spatial
+      breakdown.
+    </p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <span class="form-label">Week</span>
+        <select aria-label="Week">
+          <option selected>May 19, 2026</option>
+          <option>May 12, 2026</option>
+          <option>May 5, 2026</option>
+          <option>April 28, 2026</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <span class="form-label">Breakdown</span>
+        <select aria-label="Breakdown">
+          <option selected>By State</option>
+          <option>By County</option>
+          <option>By Climate Region</option>
+          <option>By Urban Area</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <span class="form-label">Sort</span>
+        <select aria-label="Sort">
+          <option>Alphabetical</option>
+          <option>By D4 (worst)</option>
+          <option>By D3+ combined</option>
+          <option>By D0+ combined</option>
+        </select>
+      </div>
+    </div>
+
+    <table class="usdm-table">
+      <thead>
+        <tr>
+          <th>State</th>
+          <th class="num">None</th>
+          <th class="num"><span class="swatch-cell" style="background:#FFFF00;"></span>D0</th>
+          <th class="num"><span class="swatch-cell" style="background:#FCD37F;"></span>D1</th>
+          <th class="num"><span class="swatch-cell" style="background:#FFAA00;"></span>D2</th>
+          <th class="num"><span class="swatch-cell" style="background:#E60000;"></span>D3</th>
+          <th class="num"><span class="swatch-cell" style="background:#730000;"></span>D4</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Alabama</strong></td><td class="num">12.40</td><td class="num">18.60</td><td class="num">22.10</td><td class="num">24.70</td><td class="num">17.30</td><td class="num">4.90</td></tr><tr><td><strong>Arizona</strong></td><td class="num">8.10</td><td class="num">19.40</td><td class="num">27.80</td><td class="num">25.10</td><td class="num">14.20</td><td class="num">5.40</td></tr><tr><td><strong>Arkansas</strong></td><td class="num">15.20</td><td class="num">21.80</td><td class="num">28.40</td><td class="num">20.60</td><td class="num">9.70</td><td class="num">4.30</td></tr><tr><td><strong>California</strong></td><td class="num">22.60</td><td class="num">27.10</td><td class="num">22.90</td><td class="num">16.30</td><td class="num">8.40</td><td class="num">2.70</td></tr><tr><td><strong>Colorado</strong></td><td class="num">9.40</td><td class="num">19.80</td><td class="num">26.20</td><td class="num">22.00</td><td class="num">16.40</td><td class="num">6.20</td></tr><tr><td><strong>Florida</strong></td><td class="num">5.30</td><td class="num">11.20</td><td class="num">18.90</td><td class="num">26.40</td><td class="num">24.70</td><td class="num">13.50</td></tr><tr><td><strong>Georgia</strong></td><td class="num">8.10</td><td class="num">14.70</td><td class="num">23.00</td><td class="num">26.60</td><td class="num">19.10</td><td class="num">8.50</td></tr><tr><td><strong>Iowa</strong></td><td class="num">42.10</td><td class="num">25.60</td><td class="num">18.20</td><td class="num">10.30</td><td class="num">3.10</td><td class="num">0.70</td></tr><tr><td><strong>Kansas</strong></td><td class="num">7.00</td><td class="num">15.40</td><td class="num">22.80</td><td class="num">23.90</td><td class="num">19.50</td><td class="num">11.40</td></tr><tr><td><strong>Louisiana</strong></td><td class="num">14.60</td><td class="num">20.80</td><td class="num">25.10</td><td class="num">22.40</td><td class="num">12.30</td><td class="num">4.80</td></tr><tr><td><strong>Mississippi</strong></td><td class="num">11.30</td><td class="num">17.40</td><td class="num">24.60</td><td class="num">24.10</td><td class="num">16.20</td><td class="num">6.40</td></tr><tr><td><strong>Missouri</strong></td><td class="num">38.20</td><td class="num">27.10</td><td class="num">19.40</td><td class="num">10.80</td><td class="num">3.70</td><td class="num">0.80</td></tr><tr><td><strong>Nebraska</strong></td><td class="num">21.40</td><td class="num">24.80</td><td class="num">24.10</td><td class="num">16.70</td><td class="num">9.30</td><td class="num">3.70</td></tr><tr><td><strong>Nevada</strong></td><td class="num">14.50</td><td class="num">22.10</td><td class="num">24.60</td><td class="num">19.80</td><td class="num">12.60</td><td class="num">6.40</td></tr><tr><td><strong>New Mexico</strong></td><td class="num">6.20</td><td class="num">17.30</td><td class="num">24.90</td><td class="num">23.70</td><td class="num">17.40</td><td class="num">10.50</td></tr><tr><td><strong>North Carolina</strong></td><td class="num">10.40</td><td class="num">16.50</td><td class="num">22.70</td><td class="num">23.60</td><td class="num">18.90</td><td class="num">7.90</td></tr><tr><td><strong>Oklahoma</strong></td><td class="num">5.40</td><td class="num">14.20</td><td class="num">22.60</td><td class="num">24.40</td><td class="num">21.00</td><td class="num">12.40</td></tr><tr><td><strong>Oregon</strong></td><td class="num">18.40</td><td class="num">27.60</td><td class="num">23.10</td><td class="num">17.50</td><td class="num">9.70</td><td class="num">3.70</td></tr><tr><td><strong>South Carolina</strong></td><td class="num">9.70</td><td class="num">16.00</td><td class="num">22.40</td><td class="num">24.90</td><td class="num">19.30</td><td class="num">7.70</td></tr><tr><td><strong>Tennessee</strong></td><td class="num">13.10</td><td class="num">19.40</td><td class="num">24.80</td><td class="num">23.30</td><td class="num">14.20</td><td class="num">5.20</td></tr><tr><td><strong>Texas</strong></td><td class="num">31.20</td><td class="num">24.60</td><td class="num">22.20</td><td class="num">14.20</td><td class="num">6.30</td><td class="num">1.50</td></tr><tr><td><strong>Utah</strong></td><td class="num">12.40</td><td class="num">21.50</td><td class="num">25.60</td><td class="num">21.40</td><td class="num">13.40</td><td class="num">5.70</td></tr><tr><td><strong>Virginia</strong></td><td class="num">11.80</td><td class="num">17.60</td><td class="num">22.90</td><td class="num">24.00</td><td class="num">17.40</td><td class="num">6.30</td></tr><tr><td><strong>Washington</strong></td><td class="num">26.70</td><td class="num">28.40</td><td class="num">22.50</td><td class="num">14.60</td><td class="num">6.20</td><td class="num">1.60</td></tr>
+      </tbody>
+    </table>
+
+    <p class="muted" style="font-size:13.5px;">Values shown are illustrative for the cloned demo. For the canonical values, download from <a href="data-download.html">Comprehensive Statistics</a>.</p>
+
+  </main>
+
+  <footer class="usdm-footer">
+    <div class="usdm-footer-inner">
+      <div class="partner-logos">
+        <img src="assets/usda.svg" alt="USDA" />
+        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
+        <img src="assets/doc.svg" alt="Department of Commerce" />
+        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/nasa.svg" alt="NASA" />
+      </div>
+      <p class="partner-blurb">
+        The U.S. Drought Monitor is produced through a partnership between the National Drought
+        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
+        Agriculture, the National Oceanic and Atmospheric Administration and the National
+        Aeronautics and Space Administration.
+      </p>
+
+      <div class="contact-block">
+        <div>
+          <h3>Contact Us</h3>
+          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
+          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
+          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
+          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
+          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+        </div>
+        <div>
+          <h3>Maps</h3>
+          <ul>
+            <li><a href="index.html">Current Map</a></li>
+            <li><a href="compare.html">Compare Two Weeks</a></li>
+            <li><a href="slider.html">Comparison Slider</a></li>
+            <li><a href="animations.html">Animations</a></li>
+            <li><a href="archive.html">Map Archive</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Resources</h3>
+          <ul>
+            <li><a href="data.html">Data Download</a></li>
+            <li><a href="summary.html">National Summary</a></li>
+            <li><a href="about.html">What is the USDM?</a></li>
+            <li><a href="about.html">About the Data</a></li>
+            <li><a href="contact.html">Contact Authors</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-copy">
+        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

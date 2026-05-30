@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Download | U.S. Drought Monitor</title>
+  <meta name="theme-color" content="#da3910" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  
+</head>
+<body>
+
+  <header class="usdm-header">
+    <div class="usdm-header-inner">
+      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
+    </div>
+  </header>
+
+  <nav class="usdm-nav" aria-label="Primary">
+    <div class="usdm-nav-inner">
+      <a href="index.html">Current</a>
+      <a href="maps.html">Maps</a>
+      <a href="data.html" class="active">Data</a>
+      <a href="summary.html">Summary</a>
+      <a href="about.html">About</a>
+      <a href="conditions.html">Conditions & Outlooks</a>
+      <a href="#">Ag in Drought</a>
+      <a href="#">En Español</a>
+      <a href="#">NADM</a>
+    </div>
+  </nav>
+
+  <main class="usdm-main">
+<div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="data.html">Data</a> <span class="sep">/</span> Comprehensive Statistics</div>
+
+    <h1 class="page-title">Comprehensive Statistics</h1>
+
+    <p style="font-size:16.5px;max-width:80ch;color:#3a3431;">
+      Download data for all U.S. Drought Monitor categories for each week of the selected time
+      period and location. Output options include percent of area, total area, percent of
+      population, and total population. Spatial scales include national, state, county,
+      climate region, urban areas, and many more.
+    </p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <span class="form-label">Area type</span>
+        <select aria-label="Area type">
+          <option>National</option>
+          <option selected>State</option>
+          <option>County</option>
+          <option>Climate Region</option>
+          <option>HUC-2 Watershed</option>
+          <option>Urban Area</option>
+          <option>Tribal Area</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <span class="form-label">Area</span>
+        <select aria-label="Area">
+          <option selected>Texas</option>
+          <option>California</option>
+          <option>Nebraska</option>
+          <option>Kansas</option>
+          <option>Oklahoma</option>
+          <option>Florida</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <span class="form-label">Statistic</span>
+        <select aria-label="Statistic">
+          <option>Cumulative Percent Area</option>
+          <option>Categorical Percent Area</option>
+          <option>Total Area (sq mi)</option>
+          <option>Percent of Population</option>
+          <option>Total Population</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
+      <div class="form-group">
+        <span class="form-label">Start date</span>
+        <input type="date" value="2020-01-07" />
+      </div>
+      <div class="form-group">
+        <span class="form-label">End date</span>
+        <input type="date" value="2026-05-19" />
+      </div>
+      <div class="form-group">
+        <span class="form-label">Format</span>
+        <select aria-label="Format">
+          <option>CSV</option>
+          <option>JSON</option>
+          <option>XML</option>
+          <option>Excel</option>
+        </select>
+      </div>
+    </div>
+
+    <p>
+      <a class="btn" href="#">Download Data</a>
+      <a class="btn" href="data-graphs.html" style="background:var(--usdm-charcoal);">View as Graph</a>
+      <a class="btn" href="data-tables.html" style="background:var(--usdm-charcoal);">View as Table</a>
+    </p>
+
+    <hr class="soft" />
+
+    <h2>Sample Output (preview)</h2>
+    <p>The first ten rows of the requested dataset:</p>
+
+    <table class="usdm-table">
+      <thead>
+        <tr>
+          <th>Valid Date</th>
+          <th>State</th>
+          <th class="num">None</th>
+          <th class="num">D0</th>
+          <th class="num">D1</th>
+          <th class="num">D2</th>
+          <th class="num">D3</th>
+          <th class="num">D4</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>2026-05-19</td><td>Texas</td><td class="num">31.18</td><td class="num">24.55</td><td class="num">22.16</td><td class="num">14.21</td><td class="num">6.32</td><td class="num">1.58</td></tr>
+        <tr><td>2026-05-12</td><td>Texas</td><td class="num">32.04</td><td class="num">24.31</td><td class="num">21.88</td><td class="num">13.94</td><td class="num">6.12</td><td class="num">1.71</td></tr>
+        <tr><td>2026-05-05</td><td>Texas</td><td class="num">33.42</td><td class="num">23.86</td><td class="num">21.27</td><td class="num">13.55</td><td class="num">6.20</td><td class="num">1.70</td></tr>
+        <tr><td>2026-04-28</td><td>Texas</td><td class="num">34.50</td><td class="num">23.43</td><td class="num">20.84</td><td class="num">13.31</td><td class="num">6.27</td><td class="num">1.65</td></tr>
+        <tr><td>2026-04-21</td><td>Texas</td><td class="num">35.92</td><td class="num">22.97</td><td class="num">20.40</td><td class="num">12.88</td><td class="num">6.18</td><td class="num">1.65</td></tr>
+        <tr><td>2026-04-14</td><td>Texas</td><td class="num">37.61</td><td class="num">22.40</td><td class="num">19.74</td><td class="num">12.39</td><td class="num">6.21</td><td class="num">1.65</td></tr>
+        <tr><td>2026-04-07</td><td>Texas</td><td class="num">39.05</td><td class="num">22.05</td><td class="num">19.10</td><td class="num">11.97</td><td class="num">6.18</td><td class="num">1.65</td></tr>
+        <tr><td>2026-03-31</td><td>Texas</td><td class="num">40.74</td><td class="num">21.50</td><td class="num">18.69</td><td class="num">11.36</td><td class="num">6.06</td><td class="num">1.65</td></tr>
+        <tr><td>2026-03-24</td><td>Texas</td><td class="num">42.10</td><td class="num">21.18</td><td class="num">18.20</td><td class="num">10.99</td><td class="num">5.88</td><td class="num">1.65</td></tr>
+        <tr><td>2026-03-17</td><td>Texas</td><td class="num">43.66</td><td class="num">20.74</td><td class="num">17.71</td><td class="num">10.55</td><td class="num">5.69</td><td class="num">1.65</td></tr>
+      </tbody>
+    </table>
+
+    <p class="muted" style="font-size:14px;">Data values are illustrative for the cloned demo only.</p>
+
+  </main>
+
+  <footer class="usdm-footer">
+    <div class="usdm-footer-inner">
+      <div class="partner-logos">
+        <img src="assets/usda.svg" alt="USDA" />
+        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
+        <img src="assets/doc.svg" alt="Department of Commerce" />
+        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/nasa.svg" alt="NASA" />
+      </div>
+      <p class="partner-blurb">
+        The U.S. Drought Monitor is produced through a partnership between the National Drought
+        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
+        Agriculture, the National Oceanic and Atmospheric Administration and the National
+        Aeronautics and Space Administration.
+      </p>
+
+      <div class="contact-block">
+        <div>
+          <h3>Contact Us</h3>
+          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
+          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
+          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
+          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
+          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+        </div>
+        <div>
+          <h3>Maps</h3>
+          <ul>
+            <li><a href="index.html">Current Map</a></li>
+            <li><a href="compare.html">Compare Two Weeks</a></li>
+            <li><a href="slider.html">Comparison Slider</a></li>
+            <li><a href="animations.html">Animations</a></li>
+            <li><a href="archive.html">Map Archive</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Resources</h3>
+          <ul>
+            <li><a href="data.html">Data Download</a></li>
+            <li><a href="summary.html">National Summary</a></li>
+            <li><a href="about.html">What is the USDM?</a></li>
+            <li><a href="about.html">About the Data</a></li>
+            <li><a href="contact.html">Contact Authors</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-copy">
+        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
