@@ -1,62 +1,62 @@
-# India Drought Monitor — Change Summary (v3)
+# India Drought Monitor — Change Summary (v5)
 
-Builds on the live, no-PNG rebuild. This revision adds the three requested items.
+Five UI/feature additions on top of the WCL-colour-mapped live build.
 
-## 1. Exact WCL colour-maps (from github.com/wcl-iitgn/IDM)
+## 1. State name in the side panel
 
-The old production site rendered pre-baked raster images, so its `Legend*.jsx`
-components ARE the authoritative value->colour spec. All four were transcribed into:
+A new "State" card sits at the top of the right-hand rail (above the Cursor Readout) on
+the Current, Conditions and Archive map pages. It shows the name of the state under the
+cursor, updating live as you move over the map (engine already tracks
+`state.hoveredStateName`; `wireReadout` now also fills `#ro-state-big`).
 
-- `assets/interactive/drought-map.colormaps.js`
-  - **CDI / drought** (Legend.jsx): brown / red / orange / rgb(252,214,148) / yellow /
-    white at -2.0 / -1.6 / -1.3 / -0.8 / -0.5 (white = normal above -0.5).
-  - **SPI / SRI / SSMI** (Legend4.jsx): 12-step diverging scale, -3.0 ... +3.0.
-  - **Streamflow** (Legend3.jsx): 12-step percentile scale, 0 ... 100.
-  - **Drought persistence** (Legend2.jsx): recover (#99CCFF) / persist (#FF9999).
-  - CSS named colours resolved to exact hex (brown=#A52A2A, etc.).
+## 2. Greyscale option
 
-The engine's pixel colouring (`getOfficialCDIColor`) now keys off the **actual data
-value** via the active colour-map, instead of a per-frame min/max normalisation. The
-correct effect: most of India shows near-normal (white/yellow), with drought only where
-values are genuinely low. The product switcher (Conditions page) swaps the colour-map to
-match each product; the legend swatches and the hover-readout class label use the same
-maps. `buildMap()` selects the right map automatically per product, so every page
-(including Compare and Slider) renders with the exact WCL colours.
+A "Greyscale" checkbox renders the map in perceptual-luminance grey. It is implemented in
+the engine's colour function (`getOfficialCDIColor` converts the WCL colour to grey when
+`state.grayscale` is on), so the on-screen map AND any exported PNG/GIF are greyscale.
+Exposed via `setGrayscale()` / `getGrayscale()`. Added to Current, Conditions, Archive and
+Animations pages.
 
-## 2. Rectangle-zoom toggle button
+## 3. Union Territories removed from dropdowns
 
-- Added `state.zoomMode` ('state' default | 'rect') to the engine, exposed via
-  `setZoomMode()` / `getZoomMode()`.
-- A dedicated toolbar button (styled like the Play button) toggles between
-  **click-state-zoom** and **rectangle-zoom**; the cursor becomes a crosshair in rect
-  mode. Added to the Current, Conditions and Archive map pages.
-- Pranav's rect-zoom code is preserved, but the mousedown now only starts a selection
-  box in rect mode (in state mode a click zooms straight to the state). While fixing this
-  I also repaired a latent bug: the mousemove handler never updated the selection-box
-  corner, so the rectangle had zero size and could never zoom — it now tracks the live
-  (clamped) corner, and box-zoom works.
+The "Jump to State" dropdowns now list states only. A `UT_IDS` set in
+`drought-map.app.js` (Andaman & Nicobar, Chandigarh, Dadara & Nagar Havelli, Daman & Diu,
+Jammu & Kashmir, Lakshadweep, NCT of Delhi, Puducherry) is filtered out in
+`wireStateSelect`. Placeholder and readout labels updated from "State / UT" to "State".
+(The map itself and the data-tables page still include all regions; only the dropdowns
+changed, per request.)
 
-## 3. Comparison slider fixed (true overlay)
+## 4. Interpolation slider on the Animations page
 
-Previously the clipped (top) map was rescaled to the clip container's width while the
-base map stayed full size. Now both canvases are identical full-size layers stacked
-exactly on top of each other; the top (older) layer is revealed only left of the handle
-via `clip-path: inset(0 calc(100% - var(--wipe)) 0 0)`, so it is genuinely overlaid on
-the newer map and never resized. A single `--wipe` CSS variable on the stage drives both
-the clip and the handle position. Verified: both maps display at identical size and the
-wipe reveals the older map up to the handle.
+The "Detail" interpolation slider (driving Pranav's `INTERP`) is now also present in the
+Animations control panel, alongside the date range and frame-rate inputs.
+
+## 5. Download map (PNG) and animation (GIF)
+
+- **PNG** — a "Download PNG" button on the Current, Conditions, Archive and Animations
+  pages flattens the data layer onto a white background and downloads a clean
+  `india-drought-*.png` (no HUD overlay). New engine methods `toPNGDataURL()` /
+  `captureRasterCanvas()`.
+- **GIF (animations only)** — a "GIF" button on the Animations page iterates the chosen
+  week range, renders each frame, captures the flattened raster, and encodes an animated
+  `india-drought-animation.gif` at the chosen frame rate, with a progress indicator.
+  Uses gif.js (vendored locally at `assets/vendor/gif.js` + `gif.worker.js`).
 
 ## Files touched
 
-- New: `assets/interactive/drought-map.colormaps.js`.
-- Edited: `drought-map.engine.js` (colour-map hook, zoomMode, rect-zoom fix, API),
-  `drought-map.app.js` (colour-map per product, zoom-mode button wiring, readout labels),
-  `drought-map.css` (WCL legend swatches, zoom-button active state, slider clip-path),
-  `index.html` / `conditions.html` / `archive.html` (zoom button + colormaps include),
-  `slider.html` (clip-path wipe via --wipe), and all engine pages (colormaps include).
+- `drought-map.engine.js` — grayscale in colour function + `state.grayscale`/`opts.grayscale`;
+  API: `setGrayscale`/`getGrayscale`, `toPNGDataURL`, `captureRasterCanvas`.
+- `drought-map.app.js` — UT filter in `wireStateSelect`; `stateBig` readout; greyscale,
+  PNG-download and (existing) interp-slider wiring in `mountMap`.
+- `drought-map.css` — state-name card, GIF status styles.
+- `index.html`, `conditions.html`, `archive.html` — greyscale checkbox, Download PNG,
+  state-name card, label fixes, config wiring.
+- `animations.html` — interp slider, greyscale, PNG + GIF buttons, GIF builder; loads gif.js.
+- New: `assets/vendor/gif.js`, `assets/vendor/gif.worker.js`.
 
 ## Validation
 
-All 14 pages load with intact chrome and zero JS errors; every map paints live with the
-exact WCL colour-maps; the zoom toggle and the slider overlay both verified headless.
-Serve over HTTP (maps fetch data files); runs on GitHub Pages as-is.
+All 14 pages load with intact chrome and zero JS errors. Verified headless: state name
+shows on hover; greyscale toggles the rendered map (top colour 255,255,0 -> 226,226,226);
+UTs absent from dropdowns (29 -> states only); interp slider present on Animations; a real
+275 KB GIF and a PNG both download. Serve over HTTP; runs on GitHub Pages.

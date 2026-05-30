@@ -35,11 +35,16 @@
       <div class="idm-field"><label for="anim_start_date">Start week</label><input type="date" id="anim_start_date" value="2024-01-03" min="2021-07-14" max="2026-05-20" /></div>
       <div class="idm-field"><label for="anim_end_date">End week</label><input type="date" id="anim_end_date" value="2026-05-20" min="2021-07-14" max="2026-05-20" /></div>
       <div class="idm-field"><label for="anim_fps">Frames / sec</label><input type="number" id="anim_fps" value="4" min="1" max="15" /></div>
+      <div class="idm-field"><label for="interp-slider">Detail</label><span style="display:inline-flex;align-items:center;gap:6px;"><input type="range" id="interp-slider" min="1" max="6" step="1" value="3" /><span id="interp-value" class="idm-interp-val">3</span></span></div>
+      <div class="idm-field"><label>&nbsp;</label><label class="idm-check"><input type="checkbox" id="grayscale-toggle" /> Greyscale</label></div>
       <div class="idm-anim-actions">
         <button type="button" class="idm-btn" id="btn_start_anim">&#9654; Play</button>
         <button type="button" class="idm-btn ghost" id="btn_stop_anim">&#9632; Stop</button>
+        <button type="button" class="idm-btn ghost" id="download-png">&#11015; PNG</button>
+        <button type="button" class="idm-btn ghost" id="download-gif">&#11015; GIF</button>
       </div>
     </div>
+    <div id="gif-status" class="idm-gif-status" style="display:none;"></div>
 
     <div class="idm-viewer-grid">
       <div class="idm-map-panel">
@@ -115,11 +120,15 @@
   <script src="assets/interactive/drought-map.colormaps.js"></script>
   <script src="assets/interactive/drought-map.engine.js"></script>
   <script src="assets/interactive/drought-map.app.js"></script>
+  <script src="assets/vendor/gif.js"></script>
   <script>
     window.addEventListener("DOMContentLoaded", function () {
-      IDM.mountMap({
+      var map = IDM.mountMap({
         raster:"C_raster", vector:"C_vector", product:"cdi", interactive:true,
         loader:"#idm-map-loading",
+        interpSlider:"interp-slider", interpValue:"interp-value",
+        grayscaleChk:"grayscale-toggle",
+        downloadBtn:"download-png", downloadName:"india-drought-animation-frame",
         animControls:{
           btnStart:document.getElementById("btn_start_anim"),
           btnStop:document.getElementById("btn_stop_anim"),
@@ -127,6 +136,55 @@
           endDate:document.getElementById("anim_end_date"),
           fps:document.getElementById("anim_fps")
         }
+      });
+
+      // ---- Download animation as GIF ----
+      // Iterate the chosen week range, render each frame, capture the flattened
+      // raster canvas, and encode to a .gif with gif.js (worker vendored locally).
+      var gifBtn = document.getElementById("download-gif");
+      var statusEl = document.getElementById("gif-status");
+      gifBtn.addEventListener("click", function () {
+        Promise.resolve(map).then(async function (m) {
+          if (!m || !m.loadCDIDataForDate) { m = await map; }
+          var dates = IDM.buildDateList().map(function (d) { return d; });
+          var startIso = document.getElementById("anim_start_date").value;
+          var endIso = document.getElementById("anim_end_date").value;
+          var fps = parseInt(document.getElementById("anim_fps").value, 10) || 4;
+          var frames = dates.filter(function (d) { return d.iso >= startIso && d.iso <= endIso; });
+          if (!frames.length) { return; }
+
+          m.stopCDIAnimation && m.stopCDIAnimation();
+          gifBtn.disabled = true;
+          statusEl.style.display = "block";
+          statusEl.textContent = "Building GIF… 0/" + frames.length;
+
+          var w = m.canvases.raster.width, h = m.canvases.raster.height;
+          var gif = new GIF({ workers: 2, quality: 10, width: w, height: h,
+                              workerScript: "assets/vendor/gif.worker.js", background: "#ffffff" });
+
+          for (var i = 0; i < frames.length; i++) {
+            var ok = await m.loadCDIDataForDate(frames[i].compact);
+            if (ok) {
+              m.renderStaticMap();
+              var c = m.captureRasterCanvas();   // white bg + data, flattened
+              gif.addFrame(c, { copy: true, delay: Math.round(1000 / fps) });
+            }
+            statusEl.textContent = "Building GIF… " + (i + 1) + "/" + frames.length;
+          }
+
+          gif.on("progress", function (p) { statusEl.textContent = "Encoding GIF… " + Math.round(p * 100) + "%"; });
+          gif.on("finished", function (blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url; a.download = "india-drought-animation.gif";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            statusEl.textContent = "GIF downloaded (" + frames.length + " frames).";
+            gifBtn.disabled = false;
+            setTimeout(function () { statusEl.style.display = "none"; }, 4000);
+          });
+          gif.render();
+        });
       });
     });
   </script>

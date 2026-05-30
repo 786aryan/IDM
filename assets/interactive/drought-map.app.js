@@ -106,8 +106,15 @@
 
   // ---------------------------------------------------------------------------
   // Populate a <select> with the state list (after a map's data has loaded)
-  // and wire it to zoomToStateBoundingBox.
+  // and wire it to zoomToStateBoundingBox. Union Territories are excluded from the
+  // dropdown (states only).
   // ---------------------------------------------------------------------------
+  // state_ids that are Union Territories (per state_vector_boundaries.json):
+  // Andaman & Nicobar (2), Chandigarh (7), Dadara & Nagar Havelli (9),
+  // Daman & Diu (10), Jammu & Kashmir (15), Lakshadweep (19), NCT of Delhi (26),
+  // Puducherry (27).
+  var UT_IDS = { 2: 1, 7: 1, 9: 1, 10: 1, 15: 1, 19: 1, 26: 1, 27: 1 };
+
   function wireStateSelect(selectEl, map) {
     if (!selectEl || !map) return;
     var byId = {};
@@ -116,6 +123,7 @@
     });
     Object.keys(byId)
       .map(function (id) { return { id: parseInt(id, 10), name: byId[id] }; })
+      .filter(function (it) { return !UT_IDS[it.id]; })   // states only — drop UTs
       .sort(function (a, b) { return a.name.localeCompare(b.name); })
       .forEach(function (it) {
         var o = document.createElement("option");
@@ -154,6 +162,7 @@
         if (els.cls) { els.cls.textContent = "—"; els.cls.style.background = "transparent"; els.cls.style.color = "inherit"; }
       }
       if (els.state) els.state.textContent = map.state.hoveredStateName || "—";
+      if (els.stateBig) els.stateBig.textContent = map.state.hoveredStateName || "—";
     }
     window.addEventListener("mousemove", paint);
     map.canvases.vector.addEventListener("mouseleave", paint);
@@ -219,7 +228,7 @@
     wireStateSelect(el(cfg.stateSelect), map);
     wireReadout(map, cfg.readout && {
       lat: el(cfg.readout.lat), lng: el(cfg.readout.lng), val: el(cfg.readout.val),
-      state: el(cfg.readout.state), cls: el(cfg.readout.cls)
+      state: el(cfg.readout.state), cls: el(cfg.readout.cls), stateBig: el(cfg.readout.stateBig)
     });
 
     // reset button
@@ -282,6 +291,39 @@
         syncZoomBtn();
       });
       syncZoomBtn();
+    }
+
+    // interpolation-factor slider (engine state.INTERP)
+    var interpSlider = el(cfg.interpSlider);
+    if (interpSlider) {
+      var interpVal = el(cfg.interpValue);
+      interpSlider.value = String(map.getInterp());
+      if (interpVal) interpVal.textContent = String(map.getInterp());
+      var applyInterp = function () {
+        if (interpVal) interpVal.textContent = interpSlider.value;
+        map.setInterp(interpSlider.value);
+      };
+      interpSlider.addEventListener("input", function () { if (interpVal) interpVal.textContent = interpSlider.value; });
+      interpSlider.addEventListener("change", applyInterp);
+    }
+
+    // greyscale toggle (checkbox)
+    var grayChk = el(cfg.grayscaleChk);
+    if (grayChk) {
+      grayChk.checked = !!map.getGrayscale();
+      grayChk.addEventListener("change", function () { map.setGrayscale(grayChk.checked); });
+    }
+
+    // download-PNG button
+    var dlBtn = el(cfg.downloadBtn);
+    if (dlBtn) {
+      dlBtn.addEventListener("click", function () {
+        var url = map.toPNGDataURL(false); // data layer only (no HUD overlay) for a clean map
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = (cfg.downloadName || "india-drought-map") + ".png";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      });
     }
 
     return map;

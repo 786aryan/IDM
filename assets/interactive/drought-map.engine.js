@@ -79,7 +79,10 @@ const state = {
     isAnimating: false,
     currentAnimationDateStr: null,
 
-    INTERP: 3,
+    INTERP: (opts.interp != null ? opts.interp : 3),
+
+    // Greyscale rendering toggle (affects on-screen map and exported PNG/GIF).
+    grayscale: !!opts.grayscale,
 
     isolateFocusedStateBoundaries: true,
 
@@ -113,22 +116,28 @@ async function runQuery(query) {
 function getOfficialCDIColor(val, minVal, maxVal) {
     // Use the EXACT WCL colour-maps (drought-map.colormaps.js), keyed by the actual
     // data value (not a min/max normalisation), matching the old production site.
+    let rgb = null;
     const cmap = state.colormap ||
         (typeof window !== "undefined" && window.IDM_COLORMAPS ? window.IDM_COLORMAPS.CDI : null);
     if (cmap && typeof window !== "undefined" && window.IDM_COLORMAPS) {
         const res = window.IDM_COLORMAPS.evaluate(cmap, val);
-        const rgb = window.IDM_COLORMAPS.hexToRgb(res.color);
-        if (rgb) return rgb;
-        return [255, 255, 255]; // no-data / above-range fallback -> white
+        rgb = window.IDM_COLORMAPS.hexToRgb(res.color) || [255, 255, 255];
+    } else {
+        // Fallback (only if colormaps module not loaded): legacy normalised scale.
+        const norm = (val - minVal) / (maxVal - minVal || 1);
+        if (norm < 0.12) rgb = [115, 0, 0];
+        else if (norm < 0.25) rgb = [230, 0, 0];
+        else if (norm < 0.40) rgb = [255, 170, 0];
+        else if (norm < 0.55) rgb = [255, 255, 0];
+        else if (norm < 0.75) rgb = [170, 255, 170];
+        else rgb = [56, 168, 0];
     }
-    // Fallback (only if colormaps module not loaded): legacy normalised scale.
-    const norm = (val - minVal) / (maxVal - minVal || 1);
-    if (norm < 0.12) return [115, 0, 0];
-    if (norm < 0.25) return [230, 0, 0];
-    if (norm < 0.40) return [255, 170, 0];
-    if (norm < 0.55) return [255, 255, 0];
-    if (norm < 0.75) return [170, 255, 170];
-    return [56, 168, 0];
+    // Greyscale mode: convert to perceptual luminance so the exported PNG matches too.
+    if (state.grayscale) {
+        const y = Math.round(0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]);
+        return [y, y, y];
+    }
+    return rgb;
 }
 
 /**
@@ -524,32 +533,7 @@ function renderDynamicHUD() {
         c_vector.restore();
     }
 
-    // Inside renderDynamicHUD() where tooltips are rendered:
-    if (state.hoverCoords) {
-        c_vector.save();
-        c_vector.fillStyle = "rgba(20, 20, 20, 0.95)";
-        c_vector.fillRect(state.margin.left + 15, state.margin.top + 15, 200, 80); // Height expanded to 80
-        c_vector.strokeStyle = "#534d4d";
-        c_vector.strokeRect(state.margin.left + 15, state.margin.top + 15, 200, 80); // Height expanded to 80
-        
-        c_vector.fillStyle = "#ffffff";
-        c_vector.font = "bold 12px monospace";
-        c_vector.fillText(`LAT : ${state.hoverCoords.lat.toFixed(4)}°N`, state.margin.left + 30, state.margin.top + 35);
-        c_vector.fillText(`LNG : ${state.hoverCoords.lng.toFixed(4)}°E`, state.margin.left + 30, state.margin.top + 50);
-        c_vector.fillText(`VAL : ${state.hoverCoords.val !== null ? state.hoverCoords.val.toFixed(3) : "NaN"}`, state.margin.left + 30, state.margin.top + 65);
-        
-        if (state.hoveredStateName) {
-            c_vector.fillStyle = "#FFD700"; // Gold color for the name
-            
-            c_vector.fillText(
-                `STATE : ${state.hoveredStateName}`, 
-                state.margin.left + 30, 
-                state.margin.top + 80
-            ); 
-        }
-        
-        c_vector.restore();
-    }
+    // (On-canvas cursor tooltip removed — the cursor readout is shown in the side panel.)
 
     // Render Active Zoom Box Visualizer Canvas Boundary Window Frame
     if (state.isSelecting) {
@@ -639,6 +623,12 @@ function zoomToStateAtPixel(pxFromLeft, pxFromTop) {
 
         if (stateId && stateId > 1) {
             zoomToStateBoundingBox(stateId);
+            // Clear the hover highlight immediately so the translucent blue region of the
+            // just-clicked state doesn't linger until the next mousemove.
+            state.hoveredStateId = null;
+            state.hoveredStateName = null;
+            state.hoverCoords = null;
+            renderDynamicHUD();
         }
     }
 }
@@ -937,6 +927,37 @@ function formatDateToYYYYMMDD(date) {
     resetZoom: resetZoom,
     setZoomMode: function (mode) { state.zoomMode = (mode === "rect") ? "rect" : "state"; },
     getZoomMode: function () { return state.zoomMode; },
+    setInterp: function (n) {
+      var v = parseInt(n, 10);
+      if (!isNaN(v)) { state.INTERP = Math.max(1, Math.min(8, v)); renderStaticMap(); renderDynamicHUD(); }
+    },
+    getInterp: function () { return state.INTERP; },
+    setGrayscale: function (on) { state.grayscale = !!on; renderStaticMap(); renderDynamicHUD(); },
+    getGrayscale: function () { return state.grayscale; },
+    // Composite the raster (data) and vector (overlay) canvases onto a white
+    // background and return a PNG data URL. Used for the "download map" button.
+    toPNGDataURL: function (withOverlay) {
+      var w = C_raster.width, h = C_raster.height;
+      var off = document.createElement("canvas");
+      off.width = w; off.height = h;
+      var octx = off.getContext("2d");
+      octx.fillStyle = "#ffffff";
+      octx.fillRect(0, 0, w, h);
+      octx.drawImage(C_raster, 0, 0);
+      if (withOverlay) octx.drawImage(C_vector, 0, 0);
+      return off.toDataURL("image/png");
+    },
+    // Return the flattened raster pixels (white bg + data) for GIF frame capture.
+    captureRasterCanvas: function () {
+      var w = C_raster.width, h = C_raster.height;
+      var off = document.createElement("canvas");
+      off.width = w; off.height = h;
+      var octx = off.getContext("2d");
+      octx.fillStyle = "#ffffff";
+      octx.fillRect(0, 0, w, h);
+      octx.drawImage(C_raster, 0, 0);
+      return off;
+    },
     renderStaticMap: renderStaticMap,
     renderDynamicHUD: renderDynamicHUD,
     startCDIAnimation: startCDIAnimation,

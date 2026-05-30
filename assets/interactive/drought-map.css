@@ -457,3 +457,30 @@
   color: #fff;
   border-color: var(--usdm-red);
 }
+
+/* ============ interpolation-detail slider ============ */
+.idm-interp {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13.5px; color: var(--usdm-ink, #3a3431); font-weight: 600;
+  padding: 4px 4px;
+}
+.idm-interp input[type="range"] { width: 110px; accent-color: var(--usdm-red); cursor: pointer; vertical-align: middle; }
+.idm-interp-val {
+  display: inline-block; min-width: 16px; text-align: center;
+  font-variant-numeric: tabular-nums; color: var(--usdm-red); font-weight: 700;
+}
+
+/* ============ state-name card (above cursor readout) ============ */
+.idm-state-card { padding-bottom: 12px; }
+.idm-state-name {
+  font-family: var(--usdm-display, Lora, Georgia, serif);
+  font-size: 22px; font-weight: 700; line-height: 1.15;
+  color: var(--usdm-red); min-height: 26px;
+}
+
+/* ============ GIF build status ============ */
+.idm-gif-status {
+  margin: 4px 0 18px; padding: 8px 14px; font-size: 13.5px; font-weight: 600;
+  background: var(--usdm-bg-tint); border: 1px solid var(--usdm-border);
+  border-radius: 6px; color: var(--usdm-ink, #3a3431); display: inline-block;
+}

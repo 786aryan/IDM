@@ -55,12 +55,15 @@
       <div class="idm-tool-group">
         <span class="idm-tool-label">Jump to State</span>
         <select id="state-select" aria-label="Jump to state">
-          <option value="">— Select a state / UT —</option>
+          <option value="">— Select a state —</option>
         </select>
       </div>
       <button type="button" class="idm-btn ghost" id="reset-view">&#8635; Reset view</button>
       <button type="button" class="idm-btn ghost" id="zoom-mode" aria-pressed="false">&#9783; Rectangle zoom: OFF</button>
       <label class="idm-check"><input type="checkbox" id="isolate-toggle" checked /> Isolate selected state</label>
+      <label class="idm-check"><input type="checkbox" id="grayscale-toggle" /> Greyscale</label>
+      <button type="button" class="idm-btn ghost" id="download-png">&#11015; Download PNG</button>
+      <label class="idm-interp" title="Higher = smoother interpolation between grid cells">Detail&nbsp;<input type="range" id="interp-slider" min="1" max="6" step="1" value="3" aria-label="Interpolation detail" /><span id="interp-value" class="idm-interp-val">3</span></label>
     </div>
 
     <div class="idm-viewer-grid">
@@ -76,12 +79,16 @@
       </div>
 
       <aside class="idm-rail">
+        <div class="idm-card idm-state-card">
+          <h3>State</h3>
+          <div class="idm-state-name" id="ro-state-big">&mdash;</div>
+        </div>
         <div class="idm-card">
           <h3>Cursor Readout</h3>
           <div class="idm-readout-row"><span class="k">Latitude</span><span class="v" id="ro-lat">—</span></div>
           <div class="idm-readout-row"><span class="k">Longitude</span><span class="v" id="ro-lng">—</span></div>
           <div class="idm-readout-row"><span class="k">CDI value</span><span class="v" id="ro-val">—</span></div>
-          <div class="idm-readout-row"><span class="k">State / UT</span><span class="v" id="ro-state">—</span></div>
+          <div class="idm-readout-row"><span class="k">State</span><span class="v" id="ro-state">—</span></div>
           <div class="idm-readout-row"><span class="k">Class</span><span class="v" id="ro-cls">—</span></div>
           <p class="idm-readout-hint">Move your cursor over the map to inspect any 0.25&deg; grid cell.</p>
         </div>
@@ -186,7 +193,7 @@
         raster: "C_raster", vector: "C_vector", product: "cdi",
         stateSelect: "state-select", dateSelect: "date-select",
         resetBtn: "reset-view", zoomModeBtn: "zoom-mode", isolateChk: "isolate-toggle",
-        readout: { lat:"ro-lat", lng:"ro-lng", val:"ro-val", state:"ro-state", cls:"ro-cls" },
+        readout: { lat:"ro-lat", lng:"ro-lng", val:"ro-val", state:"ro-state", cls:"ro-cls", stateBig:"ro-state-big" },
         animControls: {
           btnStart: document.getElementById("btn_start_anim"),
           btnStop: document.getElementById("btn_stop_anim"),
@@ -194,7 +201,7 @@
           endDate: document.getElementById("anim_end_date"),
           fps: document.getElementById("anim_fps")
         },
-        loader: "#idm-map-loading"
+        interpSlider:"interp-slider", interpValue:"interp-value", grayscaleChk:"grayscale-toggle", downloadBtn:"download-png", downloadName:"india-drought-cdi", loader: "#idm-map-loading"
       });
     });
   </script>
