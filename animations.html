@@ -1,131 +1,91 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-IN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Animations | U.S. Drought Monitor</title>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Animations | India Drought Monitor</title>
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
-  
+  <link rel="stylesheet" href="assets/interactive/drought-map.css" />
+  <script src="assets/vendor/papaparse.min.js"></script>
+  <script src="assets/vendor/alasql.min.js"></script>
 </head>
 <body>
-
-  <header class="usdm-header">
-    <div class="usdm-header-inner">
-      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
-    </div>
-  </header>
-
+  <header class="usdm-header"><div class="usdm-header-inner"><h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1></div></header>
   <nav class="usdm-nav" aria-label="Primary">
     <div class="usdm-nav-inner">
       <a href="index.html">Current</a>
       <a href="maps.html" class="active">Maps</a>
       <a href="data.html">Data</a>
       <a href="summary.html">Summary</a>
+      <a href="conditions.html">Conditions &amp; Outlooks</a>
       <a href="about.html">About</a>
-      <a href="conditions.html">Conditions & Outlooks</a>
-      <a href="#">Ag in Drought</a>
-      <a href="#">En Español</a>
-      <a href="#">NADM</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
-
   <main class="usdm-main">
-<div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="maps.html">Maps</a> <span class="sep">/</span> Animations</div>
-
+    <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="maps.html">Maps</a> <span class="sep">/</span> Animations</div>
     <h1 class="page-title">Animations</h1>
-
     <p style="font-size:16.5px;max-width:80ch;color:#3a3431;">
-      Watch four recent U.S. Drought Monitor maps animate week-by-week.
-      Press <strong>Play</strong> to loop, use <strong>‹ ›</strong> to step,
-      or drag the scrubber to a specific week.
+      Watch the Combined Drought Index evolve week by week across the full record (July 2021 to
+      the present). Set a date range and frame rate, then press play. Every frame is read live
+      from that week's data grid.
     </p>
 
-    <div class="form-row" style="grid-template-columns: 1fr 1fr;">
-      <div class="form-group">
-        <span class="form-label">Area</span>
-        <select aria-label="Area">
-          <option>Continental U.S. (CONUS)</option>
-          <option>Total (incl. PR, AK, HI)</option>
-          <option>High Plains</option>
-          <option>Midwest</option>
-          <option>Northeast</option>
-          <option>South</option>
-          <option>Southeast</option>
-          <option>West</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <span class="form-label">Speed</span>
-        <select aria-label="Animation speed">
-          <option>1× (default)</option>
-          <option>0.5× slow</option>
-          <option>2× fast</option>
-        </select>
+    <div class="idm-anim-panel">
+      <div class="idm-field"><label for="anim_start_date">Start week</label><input type="date" id="anim_start_date" value="2024-01-03" min="2021-07-14" max="2026-05-20" /></div>
+      <div class="idm-field"><label for="anim_end_date">End week</label><input type="date" id="anim_end_date" value="2026-05-20" min="2021-07-14" max="2026-05-20" /></div>
+      <div class="idm-field"><label for="anim_fps">Frames / sec</label><input type="number" id="anim_fps" value="4" min="1" max="15" /></div>
+      <div class="idm-anim-actions">
+        <button type="button" class="idm-btn" id="btn_start_anim">&#9654; Play</button>
+        <button type="button" class="idm-btn ghost" id="btn_stop_anim">&#9632; Stop</button>
       </div>
     </div>
 
-    <div class="anim-stage" id="anim-stage" data-frames='[
-      {"src":"assets/map_20260428.png","date":"April 28, 2026"},
-      {"src":"assets/map_20260505.png","date":"May 5, 2026"},
-      {"src":"assets/map_20260512.png","date":"May 12, 2026"},
-      {"src":"assets/map_20260519.png","date":"May 19, 2026"}
-    ]'>
-      <img src="assets/map_20260519.png" alt="USDM animation frame" style="max-width:680px;width:100%;" />
-      <div class="anim-controls">
-        <button id="anim-prev" aria-label="Previous frame">‹ Prev</button>
-        <button id="anim-play">▶ Play</button>
-        <button id="anim-next" aria-label="Next frame">Next ›</button>
-        <input type="range" id="anim-slider" min="0" max="3" value="3" step="1" aria-label="Frame slider" />
-        <span class="anim-date" id="anim-date">May 19, 2026</span>
+    <div class="idm-viewer-grid">
+      <div class="idm-map-panel">
+        <div id="idm-map-loading"><div class="idm-spinner"></div><div>Loading data&hellip;</div></div>
+        <div class="idm-canvas-stage">
+          <canvas id="C_vector" width="840" height="840"></canvas>
+          <canvas id="C_raster" width="840" height="840"></canvas>
+        </div>
       </div>
+      <aside class="idm-rail">
+        <div class="idm-card">
+          <h3>Drought Classes</h3>
+          <div class="idm-legend-list">
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-none"></span> No Drought</div>
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-d0"></span> D0 — Abnormally Dry</div>
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-d1"></span> D1 — Moderate</div>
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-d2"></span> D2 — Severe</div>
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-d3"></span> D3 — Extreme</div>
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-d4"></span> D4 — Exceptional</div>
+          </div>
+          <p class="idm-readout-hint">The current week is stamped on the map while playing.</p>
+        </div>
+      </aside>
     </div>
-
-    <h2>Legend</h2>
-    <div class="legend-grid">
-      <div class="legend-item"><span class="legend-swatch dnone"></span> <strong>None</strong></div>
-      <div class="legend-item"><span class="legend-swatch d1"></span> <strong>D1</strong></div>
-      <div class="legend-item"><span class="legend-swatch d3"></span> <strong>D3</strong></div>
-      <div class="legend-item"><span class="legend-swatch nodata"></span> <strong>No Data</strong></div>
-
-      <div class="legend-item"><span class="legend-swatch d0"></span> <strong>D0</strong></div>
-      <div class="legend-item"><span class="legend-swatch d2"></span> <strong>D2</strong></div>
-      <div class="legend-item"><span class="legend-swatch d4"></span> <strong>D4</strong></div>
-      <div></div>
-    </div>
-
-    <div class="alert-info mt-3">
-      The four-week animation above shows the gradual expansion of D3 and D4 across the
-      Southeast and Southern Plains during late April through mid-May, 2026, while
-      portions of the Pacific Northwest moisten through an active storm track.
-    </div>
-
   </main>
-
   <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/usda.svg" alt="USDA" />
-        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
-        <img src="assets/doc.svg" alt="Department of Commerce" />
-        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/imd.svg" alt="India Meteorological Department" />
+        <img src="assets/cwc.svg" alt="Central Water Commission" />
+        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
+        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
         <img src="assets/nasa.svg" alt="NASA" />
       </div>
       <p class="partner-blurb">
-        The U.S. Drought Monitor is produced through a partnership between the National Drought
-        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
-        Agriculture, the National Oceanic and Atmospheric Administration and the National
-        Aeronautics and Space Administration.
+        The India Drought Monitor is developed by the Water and Climate Lab at the Indian
+        Institute of Technology Gandhinagar, drawing on hydro-meteorological data from the
+        India Meteorological Department and the Central Water Commission, satellite products
+        from ISRO/NRSC, and global datasets from NASA.
       </p>
-
       <div class="contact-block">
         <div>
           <h3>Contact Us</h3>
-          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
-          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
-          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
-          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
-          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+          <p><strong>Water and Climate Lab</strong><br />Indian Institute of Technology Gandhinagar</p>
+          <p><span class="contact-icon">📍</span>Palaj, Gandhinagar</p>
+          <p><span class="contact-icon">@</span><a href="mailto:wcl@iitgn.ac.in">wcl@iitgn.ac.in</a></p>
         </div>
         <div>
           <h3>Maps</h3>
@@ -142,18 +102,32 @@
           <ul>
             <li><a href="data.html">Data Download</a></li>
             <li><a href="summary.html">National Summary</a></li>
-            <li><a href="about.html">What is the USDM?</a></li>
-            <li><a href="about.html">About the Data</a></li>
+            <li><a href="about.html">What is the IDM?</a></li>
             <li><a href="contact.html">Contact Authors</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-copy">
-        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+        © 2026 Water and Climate Lab · Indian Institute of Technology Gandhinagar · For research and demonstration purposes
       </div>
     </div>
   </footer>
-
-  <script src="assets/app.js"></script>
-</body>
-</html>
+  <script src="assets/interactive/drought-map.colormaps.js"></script>
+  <script src="assets/interactive/drought-map.engine.js"></script>
+  <script src="assets/interactive/drought-map.app.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      IDM.mountMap({
+        raster:"C_raster", vector:"C_vector", product:"cdi", interactive:true,
+        loader:"#idm-map-loading",
+        animControls:{
+          btnStart:document.getElementById("btn_start_anim"),
+          btnStop:document.getElementById("btn_stop_anim"),
+          startDate:document.getElementById("anim_start_date"),
+          endDate:document.getElementById("anim_end_date"),
+          fps:document.getElementById("anim_fps")
+        }
+      });
+    });
+  </script>
+</body></html>

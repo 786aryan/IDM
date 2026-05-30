@@ -1,144 +1,83 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-IN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Map Archive | U.S. Drought Monitor</title>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Map Archive | India Drought Monitor</title>
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
-  
+  <link rel="stylesheet" href="assets/interactive/drought-map.css" />
+  <script src="assets/vendor/papaparse.min.js"></script>
+  <script src="assets/vendor/alasql.min.js"></script>
 </head>
 <body>
-
-  <header class="usdm-header">
-    <div class="usdm-header-inner">
-      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
-    </div>
-  </header>
-
+  <header class="usdm-header"><div class="usdm-header-inner"><h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1></div></header>
   <nav class="usdm-nav" aria-label="Primary">
     <div class="usdm-nav-inner">
       <a href="index.html">Current</a>
       <a href="maps.html" class="active">Maps</a>
       <a href="data.html">Data</a>
       <a href="summary.html">Summary</a>
+      <a href="conditions.html">Conditions &amp; Outlooks</a>
       <a href="about.html">About</a>
-      <a href="conditions.html">Conditions & Outlooks</a>
-      <a href="#">Ag in Drought</a>
-      <a href="#">En Español</a>
-      <a href="#">NADM</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
-
   <main class="usdm-main">
-<div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="maps.html">Maps</a> <span class="sep">/</span> Map Archive</div>
-
+    <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="maps.html">Maps</a> <span class="sep">/</span> Map Archive</div>
     <h1 class="page-title">Map Archive</h1>
-
     <p style="font-size:16.5px;max-width:80ch;color:#3a3431;">
-      Browse historical U.S. Drought Monitor maps. The full archive goes back to
-      January 4, 2000. Below are the four most recent weeks displayed in this clone — use
-      the date picker to jump to any week in the archive.
+      Browse the weekly Combined Drought Index back to July 2021. Pick any week to render that
+      week's map live, then zoom and inspect as usual.
     </p>
 
-    <div class="form-row">
-      <div class="form-group">
-        <span class="form-label">Year</span>
-        <select aria-label="Year">
-          <option selected>2026</option>
-          <option>2025</option>
-          <option>2024</option>
-          <option>2023</option>
-          <option>2022</option>
-          <option>2021</option>
-          <option>2020</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <span class="form-label">Month</span>
-        <select aria-label="Month">
-          <option selected>May</option>
-          <option>April</option>
-          <option>March</option>
-          <option>February</option>
-          <option>January</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <span class="form-label">Area</span>
-        <select aria-label="Area">
-          <option>Continental U.S. (CONUS)</option>
-          <option>Total (incl. PR, AK, HI)</option>
-          <option>Alaska</option>
-          <option>Hawaii</option>
-          <option>Puerto Rico</option>
-        </select>
-      </div>
+    <div class="idm-toolbar">
+      <div class="idm-tool-group"><span class="idm-tool-label">Week</span><select id="date-select" aria-label="Choose week"></select></div>
+      <div class="idm-tool-group"><span class="idm-tool-label">Jump to State</span><select id="state-select"><option value="">— Select a state / UT —</option></select></div>
+      <button type="button" class="idm-btn ghost" id="reset-view">&#8635; Reset view</button>
+      <button type="button" class="idm-btn ghost" id="zoom-mode" aria-pressed="false">&#9783; Rectangle zoom: OFF</button>
     </div>
 
-    <div class="card-grid">
-      
-    <div class="card" style="cursor:pointer;">
-      <img src="assets/map_20260519.png" alt="USDM map for May 19, 2026" style="width:100%;height:auto;display:block;margin-bottom:12px;border-radius:4px;border:1px solid #eee;" />
-      <h3>May 19, 2026</h3>
-      <p>Released the Thursday following data cutoff.</p>
-      <span class="card-link">View full size →</span>
+    <div class="idm-viewer-grid">
+      <div class="idm-map-panel">
+        <div id="idm-map-loading"><div class="idm-spinner"></div><div>Loading data&hellip;</div></div>
+        <div class="idm-canvas-stage">
+          <canvas id="C_vector" width="840" height="840"></canvas>
+          <canvas id="C_raster" width="840" height="840"></canvas>
+        </div>
+      </div>
+      <aside class="idm-rail">
+        <div class="idm-card">
+          <h3>Cursor Readout</h3>
+          <div class="idm-readout-row"><span class="k">Latitude</span><span class="v" id="ro-lat">—</span></div>
+          <div class="idm-readout-row"><span class="k">Longitude</span><span class="v" id="ro-lng">—</span></div>
+          <div class="idm-readout-row"><span class="k">CDI value</span><span class="v" id="ro-val">—</span></div>
+          <div class="idm-readout-row"><span class="k">State / UT</span><span class="v" id="ro-state">—</span></div>
+          <div class="idm-readout-row"><span class="k">Class</span><span class="v" id="ro-cls">—</span></div>
+        </div>
+      </aside>
     </div>
-    
-    <div class="card" style="cursor:pointer;">
-      <img src="assets/map_20260512.png" alt="USDM map for May 12, 2026" style="width:100%;height:auto;display:block;margin-bottom:12px;border-radius:4px;border:1px solid #eee;" />
-      <h3>May 12, 2026</h3>
-      <p>Released the Thursday following data cutoff.</p>
-      <span class="card-link">View full size →</span>
-    </div>
-    
-    <div class="card" style="cursor:pointer;">
-      <img src="assets/map_20260505.png" alt="USDM map for May 5, 2026" style="width:100%;height:auto;display:block;margin-bottom:12px;border-radius:4px;border:1px solid #eee;" />
-      <h3>May 5, 2026</h3>
-      <p>Released the Thursday following data cutoff.</p>
-      <span class="card-link">View full size →</span>
-    </div>
-    
-    <div class="card" style="cursor:pointer;">
-      <img src="assets/map_20260428.png" alt="USDM map for April 28, 2026" style="width:100%;height:auto;display:block;margin-bottom:12px;border-radius:4px;border:1px solid #eee;" />
-      <h3>April 28, 2026</h3>
-      <p>Released the Thursday following data cutoff.</p>
-      <span class="card-link">View full size →</span>
-    </div>
-    
-    </div>
-
-    <div class="alert-info">
-      Looking for a map from before January 2000? The USDM record begins on January 4, 2000.
-      For earlier drought conditions, see the NOAA NCEI <a href="#">historical Palmer Drought Severity Index</a> archive.
-    </div>
-
   </main>
-
   <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/usda.svg" alt="USDA" />
-        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
-        <img src="assets/doc.svg" alt="Department of Commerce" />
-        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/imd.svg" alt="India Meteorological Department" />
+        <img src="assets/cwc.svg" alt="Central Water Commission" />
+        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
+        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
         <img src="assets/nasa.svg" alt="NASA" />
       </div>
       <p class="partner-blurb">
-        The U.S. Drought Monitor is produced through a partnership between the National Drought
-        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
-        Agriculture, the National Oceanic and Atmospheric Administration and the National
-        Aeronautics and Space Administration.
+        The India Drought Monitor is developed by the Water and Climate Lab at the Indian
+        Institute of Technology Gandhinagar, drawing on hydro-meteorological data from the
+        India Meteorological Department and the Central Water Commission, satellite products
+        from ISRO/NRSC, and global datasets from NASA.
       </p>
-
       <div class="contact-block">
         <div>
           <h3>Contact Us</h3>
-          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
-          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
-          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
-          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
-          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+          <p><strong>Water and Climate Lab</strong><br />Indian Institute of Technology Gandhinagar</p>
+          <p><span class="contact-icon">📍</span>Palaj, Gandhinagar</p>
+          <p><span class="contact-icon">@</span><a href="mailto:wcl@iitgn.ac.in">wcl@iitgn.ac.in</a></p>
         </div>
         <div>
           <h3>Maps</h3>
@@ -155,18 +94,28 @@
           <ul>
             <li><a href="data.html">Data Download</a></li>
             <li><a href="summary.html">National Summary</a></li>
-            <li><a href="about.html">What is the USDM?</a></li>
-            <li><a href="about.html">About the Data</a></li>
+            <li><a href="about.html">What is the IDM?</a></li>
             <li><a href="contact.html">Contact Authors</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-copy">
-        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+        © 2026 Water and Climate Lab · Indian Institute of Technology Gandhinagar · For research and demonstration purposes
       </div>
     </div>
   </footer>
-
-  <script src="assets/app.js"></script>
-</body>
-</html>
+  <script src="assets/interactive/drought-map.colormaps.js"></script>
+  <script src="assets/interactive/drought-map.engine.js"></script>
+  <script src="assets/interactive/drought-map.app.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      IDM.fillDateSelect(document.getElementById("date-select"));
+      IDM.mountMap({
+        raster:"C_raster", vector:"C_vector", product:"cdi",
+        dateSelect:"date-select", stateSelect:"state-select", resetBtn:"reset-view", zoomModeBtn:"zoom-mode",
+        readout:{lat:"ro-lat",lng:"ro-lng",val:"ro-val",state:"ro-state",cls:"ro-cls"},
+        loader:"#idm-map-loading"
+      });
+    });
+  </script>
+</body></html>

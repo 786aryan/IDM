@@ -1,150 +1,96 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-IN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Compare Two Weeks | U.S. Drought Monitor</title>
+  <title>Compare Two Weeks | India Drought Monitor</title>
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
-  
+  <link rel="stylesheet" href="assets/interactive/drought-map.css" />
+  <script src="assets/vendor/papaparse.min.js"></script>
+  <script src="assets/vendor/alasql.min.js"></script>
 </head>
 <body>
-
-  <header class="usdm-header">
-    <div class="usdm-header-inner">
-      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
-    </div>
-  </header>
-
+  <header class="usdm-header"><div class="usdm-header-inner"><h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1></div></header>
   <nav class="usdm-nav" aria-label="Primary">
     <div class="usdm-nav-inner">
       <a href="index.html">Current</a>
       <a href="maps.html" class="active">Maps</a>
       <a href="data.html">Data</a>
       <a href="summary.html">Summary</a>
+      <a href="conditions.html">Conditions &amp; Outlooks</a>
       <a href="about.html">About</a>
-      <a href="conditions.html">Conditions & Outlooks</a>
-      <a href="#">Ag in Drought</a>
-      <a href="#">En Español</a>
-      <a href="#">NADM</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
-
   <main class="usdm-main">
-<div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="maps.html">Maps</a> <span class="sep">/</span> Compare Two Weeks</div>
-
+    <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="maps.html">Maps</a> <span class="sep">/</span> Compare Two Weeks</div>
     <h1 class="page-title">Compare Two Weeks</h1>
+    <p style="font-size:16.5px;max-width:80ch;color:#3a3431;">
+      View two weeks of the Combined Drought Index side by side, each rendered live from the
+      gridded data. Pick any two weeks to see how conditions changed. Hover either map for exact
+      values.
+    </p>
 
-    <div class="form-row">
-      <div class="form-group">
-        <span class="form-label">Area type</span>
-        <select aria-label="Area type">
-          <option>National</option>
-          <option>State</option>
-          <option>County</option>
-          <option>Climate Region</option>
-        </select>
-        <button class="help-btn" aria-label="Help">?</button>
-      </div>
-      <div class="form-group">
-        <span class="form-label">Area</span>
-        <select aria-label="Area">
-          <option>Continental U.S. (CONUS)</option>
-          <option>Total (incl. PR, AK, HI)</option>
-          <option>High Plains</option>
-          <option>Midwest</option>
-          <option>Northeast</option>
-          <option>South</option>
-          <option>Southeast</option>
-          <option>West</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <span class="form-label">Statistics type</span>
-        <select aria-label="Statistics type">
-          <option>Cumulative Percent Area</option>
-          <option>Categorical Percent Area</option>
-          <option>Total Area (sq mi)</option>
-          <option>Percent of Population</option>
-        </select>
-        <button class="help-btn" aria-label="Help">?</button>
-      </div>
-    </div>
-
-    <h2>Drought Classification</h2>
-    <div class="legend-grid">
-      <div class="legend-item"><span class="legend-swatch dnone"></span> <strong>None</strong></div>
-      <div class="legend-item"><span class="legend-swatch d2"></span> <strong>D2</strong> (Severe Drought)</div>
-      <div class="legend-item"><span class="legend-swatch d4"></span> <strong>D4</strong> (Exceptional Drought)</div>
-      <div></div>
-
-      <div class="legend-item"><span class="legend-swatch d0"></span> <strong>D0</strong> (Abnormally Dry)</div>
-      <div class="legend-item"><span class="legend-swatch d3"></span> <strong>D3</strong> (Extreme Drought)</div>
-      <div class="legend-item"><span class="legend-swatch nodata"></span> <strong>No Data</strong></div>
-      <div></div>
-
-      <div class="legend-item"><span class="legend-swatch d1"></span> <strong>D1</strong> (Moderate Drought)</div>
-      <div></div><div></div><div></div>
-    </div>
-
-    <div class="compare-grid mt-3">
+    <div class="idm-compare-grid">
       <div>
-        <div class="compare-caption">May 12, 2026</div>
-        <div class="map-wrap"><img class="map-img" src="assets/map_20260512.png" alt="USDM map for May 12, 2026" /></div>
+        <div class="idm-tool-group" style="margin-bottom:10px;">
+          <span class="idm-tool-label">Left week</span>
+          <select id="date-left" aria-label="Left week"></select>
+        </div>
+        <div class="idm-map-panel idm-compare-panel">
+          <div id="loading-left" class="idm-map-loading-sm"><div class="idm-spinner"></div></div>
+          <div class="idm-canvas-stage idm-stage-sm">
+            <canvas id="L_vector" width="520" height="520"></canvas>
+            <canvas id="L_raster" width="520" height="520"></canvas>
+          </div>
+        </div>
       </div>
       <div>
-        <div class="compare-caption">May 19, 2026</div>
-        <div class="map-wrap"><img class="map-img" src="assets/map_20260519.png" alt="USDM map for May 19, 2026" /></div>
+        <div class="idm-tool-group" style="margin-bottom:10px;">
+          <span class="idm-tool-label">Right week</span>
+          <select id="date-right" aria-label="Right week"></select>
+        </div>
+        <div class="idm-map-panel idm-compare-panel">
+          <div id="loading-right" class="idm-map-loading-sm"><div class="idm-spinner"></div></div>
+          <div class="idm-canvas-stage idm-stage-sm">
+            <canvas id="R_vector" width="520" height="520"></canvas>
+            <canvas id="R_raster" width="520" height="520"></canvas>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="compare-grid">
-      
-    <div class="dsci-bar-wrap">
-      <div class="dsci-bar-title">Drought Statistics<br/><span class="muted" style="font-weight:400;font-size:14px;">Cumulative Percent Area · CONUS · Data valid May 12, 2026</span></div>
-      <div class="stat-bar-row"><span><span class="swatch-cell" style="background:#ffffff;"></span><strong>None</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:20.13%;background:#ffffff;border:1px solid #aaa;"></div></div><div class="stat-val">20.13%</div></div><div class="stat-bar-row"><span><span class="swatch-cell" style="background:#FFFF00;"></span><strong>D0</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:21.65%;background:#FFFF00;border:none;"></div></div><div class="stat-val">21.65%</div></div><div class="stat-bar-row"><span><span class="swatch-cell" style="background:#FCD37F;"></span><strong>D1</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:26.4%;background:#FCD37F;border:none;"></div></div><div class="stat-val">26.40%</div></div><div class="stat-bar-row"><span><span class="swatch-cell" style="background:#FFAA00;"></span><strong>D2</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:18.42%;background:#FFAA00;border:none;"></div></div><div class="stat-val">18.42%</div></div><div class="stat-bar-row"><span><span class="swatch-cell" style="background:#E60000;"></span><strong>D3</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:10.27%;background:#E60000;border:none;"></div></div><div class="stat-val">10.27%</div></div><div class="stat-bar-row"><span><span class="swatch-cell" style="background:#730000;"></span><strong>D4</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:3.13%;background:#730000;border:none;"></div></div><div class="stat-val">3.13%</div></div>
+    <div class="idm-legend-inline">
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-none"></span>No Drought</span>
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-d0"></span>D0</span>
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-d1"></span>D1</span>
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-d2"></span>D2</span>
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-d3"></span>D3</span>
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-d4"></span>D4</span>
     </div>
-    
-      
-    <div class="dsci-bar-wrap">
-      <div class="dsci-bar-title">Drought Statistics<br/><span class="muted" style="font-weight:400;font-size:14px;">Cumulative Percent Area · CONUS · Data valid May 19, 2026</span></div>
-      <div class="stat-bar-row"><span><span class="swatch-cell" style="background:#ffffff;"></span><strong>None</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:19.46%;background:#ffffff;border:1px solid #aaa;"></div></div><div class="stat-val">19.46%</div></div><div class="stat-bar-row"><span><span class="swatch-cell" style="background:#FFFF00;"></span><strong>D0</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:21.2%;background:#FFFF00;border:none;"></div></div><div class="stat-val">21.20%</div></div><div class="stat-bar-row"><span><span class="swatch-cell" style="background:#FCD37F;"></span><strong>D1</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:25.95%;background:#FCD37F;border:none;"></div></div><div class="stat-val">25.95%</div></div><div class="stat-bar-row"><span><span class="swatch-cell" style="background:#FFAA00;"></span><strong>D2</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:18.88%;background:#FFAA00;border:none;"></div></div><div class="stat-val">18.88%</div></div><div class="stat-bar-row"><span><span class="swatch-cell" style="background:#E60000;"></span><strong>D3</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:10.94%;background:#E60000;border:none;"></div></div><div class="stat-val">10.94%</div></div><div class="stat-bar-row"><span><span class="swatch-cell" style="background:#730000;"></span><strong>D4</strong></span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:3.57%;background:#730000;border:none;"></div></div><div class="stat-val">3.57%</div></div>
-    </div>
-    
-    </div>
-
-    <div class="alert-info">
-      Side-by-side comparison shows how the drought footprint evolved between the two
-      selected weeks. Notice the modest expansion of D3 and D4 across the High Plains
-      and Southeast — driven by below-normal precipitation across much of the South.
-    </div>
-
   </main>
-
   <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/usda.svg" alt="USDA" />
-        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
-        <img src="assets/doc.svg" alt="Department of Commerce" />
-        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/imd.svg" alt="India Meteorological Department" />
+        <img src="assets/cwc.svg" alt="Central Water Commission" />
+        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
+        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
         <img src="assets/nasa.svg" alt="NASA" />
       </div>
       <p class="partner-blurb">
-        The U.S. Drought Monitor is produced through a partnership between the National Drought
-        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
-        Agriculture, the National Oceanic and Atmospheric Administration and the National
-        Aeronautics and Space Administration.
+        The India Drought Monitor is developed by the Water and Climate Lab at the Indian
+        Institute of Technology Gandhinagar, drawing on hydro-meteorological data from the
+        India Meteorological Department and the Central Water Commission, satellite products
+        from ISRO/NRSC, and global datasets from NASA.
       </p>
-
       <div class="contact-block">
         <div>
           <h3>Contact Us</h3>
-          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
-          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
-          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
-          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
-          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+          <p><strong>Water and Climate Lab</strong><br />Indian Institute of Technology Gandhinagar</p>
+          <p><span class="contact-icon">📍</span>Palaj, Gandhinagar</p>
+          <p><span class="contact-icon">@</span><a href="mailto:wcl@iitgn.ac.in">wcl@iitgn.ac.in</a></p>
         </div>
         <div>
           <h3>Maps</h3>
@@ -161,18 +107,48 @@
           <ul>
             <li><a href="data.html">Data Download</a></li>
             <li><a href="summary.html">National Summary</a></li>
-            <li><a href="about.html">What is the USDM?</a></li>
-            <li><a href="about.html">About the Data</a></li>
+            <li><a href="about.html">What is the IDM?</a></li>
             <li><a href="contact.html">Contact Authors</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-copy">
-        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+        © 2026 Water and Climate Lab · Indian Institute of Technology Gandhinagar · For research and demonstration purposes
       </div>
     </div>
   </footer>
+  <script src="assets/interactive/drought-map.colormaps.js"></script>
+  <script src="assets/interactive/drought-map.engine.js"></script>
+  <script src="assets/interactive/drought-map.app.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      IDM.fillDateSelect(document.getElementById("date-left"), "2026-05-20");
+      IDM.fillDateSelect(document.getElementById("date-right"), "2025-05-21");
 
-  <script src="assets/app.js"></script>
+      (async function () {
+        try {
+          var left = IDM.buildMap(document.getElementById("L_raster"), document.getElementById("L_vector"), "cdi", { interactive: true, size: 520 });
+          await left.init();
+          document.getElementById("loading-left").classList.add("idm-hidden");
+
+          var right = IDM.buildMap(document.getElementById("R_raster"), document.getElementById("R_vector"), "cdi", { interactive: true, size: 520 });
+          await right.init();
+          var ok = await right.loadCDIDataForDate("20250521");
+          if (ok) { right.renderStaticMap(); right.renderDynamicHUD(); }
+          document.getElementById("loading-right").classList.add("idm-hidden");
+
+          document.getElementById("date-left").addEventListener("change", function (e) {
+            right.stopCDIAnimation && left.stopCDIAnimation();
+            left.loadCDIDataForDate(e.target.value.replace(/-/g, "")).then(function (k) { if (k) { left.renderStaticMap(); left.renderDynamicHUD(); } });
+          });
+          document.getElementById("date-right").addEventListener("change", function (e) {
+            right.loadCDIDataForDate(e.target.value.replace(/-/g, "")).then(function (k) { if (k) { right.renderStaticMap(); right.renderDynamicHUD(); } });
+          });
+        } catch (err) {
+          console.error("Compare init failed:", err);
+        }
+      })();
+    });
+  </script>
 </body>
 </html>

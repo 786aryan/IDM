@@ -1,125 +1,92 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-IN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Maps | U.S. Drought Monitor</title>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maps | India Drought Monitor</title>
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
-  
 </head>
 <body>
-
-  <header class="usdm-header">
-    <div class="usdm-header-inner">
-      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
-    </div>
-  </header>
-
+  <header class="usdm-header"><div class="usdm-header-inner"><h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1></div></header>
   <nav class="usdm-nav" aria-label="Primary">
     <div class="usdm-nav-inner">
       <a href="index.html">Current</a>
       <a href="maps.html" class="active">Maps</a>
       <a href="data.html">Data</a>
       <a href="summary.html">Summary</a>
+      <a href="conditions.html">Conditions &amp; Outlooks</a>
       <a href="about.html">About</a>
-      <a href="conditions.html">Conditions & Outlooks</a>
-      <a href="#">Ag in Drought</a>
-      <a href="#">En Español</a>
-      <a href="#">NADM</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
-
   <main class="usdm-main">
-<div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> Maps</div>
-
-    <div class="page-title-row">
-      <h1 class="page-title">Maps</h1>
-    </div>
-
+    <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> Maps</div>
+    <h1 class="page-title">Maps</h1>
     <p style="font-size:17px;max-width:80ch;color:#3a3431;margin-bottom:32px;">
-      Explore the U.S. Drought Monitor through multiple lenses — compare two weeks side-by-side,
-      slide between them, scrub through an animation of recent maps, or dig into the long-running
-      archive. Custom map requests and the interactive map viewer round out the toolkit.
+      Every map here is rendered live from the Combined Drought Index data &mdash; no static
+      images. Explore the current week on the <a href="index.html">home page</a>, compare two
+      weeks side by side, wipe between them, animate the record, or browse the weekly archive.
     </p>
-
     <div class="card-grid">
+      <a class="card" href="index.html" style="text-decoration:none;color:inherit;">
+        <div class="icon">&#128506;</div>
+        <h3>Current Map</h3>
+        <p>The live interactive Combined Drought Index for the latest week. Hover, zoom, and jump to any state.</p>
+        <span class="card-link">Open Current Map &rarr;</span>
+      </a>
       <a class="card" href="compare.html" style="text-decoration:none;color:inherit;">
-        <div class="icon">⇆</div>
+        <div class="icon">&#8646;</div>
         <h3>Compare Two Weeks</h3>
-        <p>View two USDM maps side-by-side with synchronized statistics, broken down by class and area.</p>
-        <span class="card-link">Open Compare Two Weeks →</span>
+        <p>Two live maps side by side. Pick any two weeks to see how drought conditions changed.</p>
+        <span class="card-link">Open Compare Two Weeks &rarr;</span>
       </a>
-
       <a class="card" href="slider.html" style="text-decoration:none;color:inherit;">
-        <div class="icon">⇋</div>
+        <div class="icon">&#8651;</div>
         <h3>Comparison Slider</h3>
-        <p>Drag a vertical slider between an older map and the current one to see what changed at a glance.</p>
-        <span class="card-link">Open Comparison Slider →</span>
+        <p>Drag a handle to wipe between an older week and a newer one, both rendered live.</p>
+        <span class="card-link">Open Comparison Slider &rarr;</span>
       </a>
-
-      <a class="card" href="archive.html" style="text-decoration:none;color:inherit;">
-        <div class="icon">🗂</div>
-        <h3>Map Archive</h3>
-        <p>Browse historical USDM maps. Pick any week back to January 2000 to view the map and its associated narrative.</p>
-        <span class="card-link">Open Map Archive →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🗺</div>
-        <h3>Map Viewer</h3>
-        <p>An interactive GIS viewer for overlaying USDM with outlooks, precipitation, streamflow, vegetation, and reference layers.</p>
-        <span class="card-link">Open Map Viewer →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">📊</div>
-        <h3>Change Maps</h3>
-        <p>Render maps showing where drought classifications changed between selectable date ranges and areas.</p>
-        <span class="card-link">Open Change Maps →</span>
-      </a>
-
       <a class="card" href="animations.html" style="text-decoration:none;color:inherit;">
-        <div class="icon">▶</div>
+        <div class="icon">&#9654;</div>
         <h3>Animations</h3>
-        <p>Watch recent USDM maps animate week-by-week. Pause, scrub, and step through to track the evolving picture.</p>
-        <span class="card-link">Open Animations →</span>
+        <p>Play the weekly CDI record back through time at your chosen frame rate.</p>
+        <span class="card-link">Open Animations &rarr;</span>
       </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">✉</div>
-        <h3>Custom Map Request</h3>
-        <p>Need a special-purpose map for a publication or briefing? Tell us what you need.</p>
-        <span class="card-link">Open Custom Map Request →</span>
+      <a class="card" href="archive.html" style="text-decoration:none;color:inherit;">
+        <div class="icon">&#128450;</div>
+        <h3>Map Archive</h3>
+        <p>Render any week from July 2021 to the present, then zoom and inspect.</p>
+        <span class="card-link">Open Map Archive &rarr;</span>
+      </a>
+      <a class="card" href="conditions.html" style="text-decoration:none;color:inherit;">
+        <div class="icon">&#127777;</div>
+        <h3>Conditions &amp; Outlooks</h3>
+        <p>Switch between the SPI, SRI and SSMI indices and short-range CDI forecasts.</p>
+        <span class="card-link">Open Conditions &amp; Outlooks &rarr;</span>
       </a>
     </div>
-
   </main>
-
   <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/usda.svg" alt="USDA" />
-        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
-        <img src="assets/doc.svg" alt="Department of Commerce" />
-        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/imd.svg" alt="India Meteorological Department" />
+        <img src="assets/cwc.svg" alt="Central Water Commission" />
+        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
+        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
         <img src="assets/nasa.svg" alt="NASA" />
       </div>
       <p class="partner-blurb">
-        The U.S. Drought Monitor is produced through a partnership between the National Drought
-        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
-        Agriculture, the National Oceanic and Atmospheric Administration and the National
-        Aeronautics and Space Administration.
+        The India Drought Monitor is developed by the Water and Climate Lab at the Indian
+        Institute of Technology Gandhinagar, drawing on hydro-meteorological data from the
+        India Meteorological Department and the Central Water Commission, satellite products
+        from ISRO/NRSC, and global datasets from NASA.
       </p>
-
       <div class="contact-block">
         <div>
           <h3>Contact Us</h3>
-          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
-          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
-          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
-          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
-          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+          <p><strong>Water and Climate Lab</strong><br />Indian Institute of Technology Gandhinagar</p>
+          <p><span class="contact-icon">📍</span>Palaj, Gandhinagar</p>
+          <p><span class="contact-icon">@</span><a href="mailto:wcl@iitgn.ac.in">wcl@iitgn.ac.in</a></p>
         </div>
         <div>
           <h3>Maps</h3>
@@ -136,18 +103,14 @@
           <ul>
             <li><a href="data.html">Data Download</a></li>
             <li><a href="summary.html">National Summary</a></li>
-            <li><a href="about.html">What is the USDM?</a></li>
-            <li><a href="about.html">About the Data</a></li>
+            <li><a href="about.html">What is the IDM?</a></li>
             <li><a href="contact.html">Contact Authors</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-copy">
-        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+        © 2026 Water and Climate Lab · Indian Institute of Technology Gandhinagar · For research and demonstration purposes
       </div>
     </div>
   </footer>
-
-  <script src="assets/app.js"></script>
-</body>
-</html>
+</body></html>

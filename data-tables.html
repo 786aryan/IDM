@@ -1,121 +1,83 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-IN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Data Tables | U.S. Drought Monitor</title>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Tables | India Drought Monitor</title>
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
-  
+  <link rel="stylesheet" href="assets/interactive/drought-map.css" />
+  <script src="assets/vendor/papaparse.min.js"></script>
+  <script src="assets/vendor/alasql.min.js"></script>
 </head>
 <body>
-
-  <header class="usdm-header">
-    <div class="usdm-header-inner">
-      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
-    </div>
-  </header>
-
+  <header class="usdm-header"><div class="usdm-header-inner"><h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1></div></header>
   <nav class="usdm-nav" aria-label="Primary">
     <div class="usdm-nav-inner">
       <a href="index.html">Current</a>
       <a href="maps.html">Maps</a>
       <a href="data.html" class="active">Data</a>
       <a href="summary.html">Summary</a>
+      <a href="conditions.html">Conditions &amp; Outlooks</a>
       <a href="about.html">About</a>
-      <a href="conditions.html">Conditions & Outlooks</a>
-      <a href="#">Ag in Drought</a>
-      <a href="#">En Español</a>
-      <a href="#">NADM</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
-
   <main class="usdm-main">
-<div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="data.html">Data</a> <span class="sep">/</span> Data Tables</div>
-
+    <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="data.html">Data</a> <span class="sep">/</span> Data Tables</div>
     <h1 class="page-title">Data Tables</h1>
-
     <p style="font-size:16.5px;max-width:80ch;color:#3a3431;">
-      Percent of area in each U.S. Drought Monitor category, broken down by state, for the
-      most recent map. Use the controls below to switch between weeks or change the spatial
-      breakdown.
+      Percent of area in each drought class, by state and union territory, for the selected week.
+      These values are computed live in your browser from the Combined Drought Index grid and the
+      state boundary grid.
     </p>
 
-    <div class="form-row">
-      <div class="form-group">
-        <span class="form-label">Week</span>
-        <select aria-label="Week">
-          <option selected>May 19, 2026</option>
-          <option>May 12, 2026</option>
-          <option>May 5, 2026</option>
-          <option>April 28, 2026</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <span class="form-label">Breakdown</span>
-        <select aria-label="Breakdown">
-          <option selected>By State</option>
-          <option>By County</option>
-          <option>By Climate Region</option>
-          <option>By Urban Area</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <span class="form-label">Sort</span>
-        <select aria-label="Sort">
-          <option>Alphabetical</option>
-          <option>By D4 (worst)</option>
-          <option>By D3+ combined</option>
-          <option>By D0+ combined</option>
+    <div class="idm-toolbar">
+      <div class="idm-tool-group"><span class="idm-tool-label">Week</span><select id="date-select" aria-label="Choose week"></select></div>
+      <div class="idm-tool-group"><span class="idm-tool-label">Sort</span>
+        <select id="sort-select">
+          <option value="name">Alphabetical</option>
+          <option value="d4">By D4 (worst)</option>
+          <option value="d3">By D3+ combined</option>
         </select>
       </div>
     </div>
 
-    <table class="usdm-table">
-      <thead>
-        <tr>
-          <th>State</th>
-          <th class="num">None</th>
-          <th class="num"><span class="swatch-cell" style="background:#FFFF00;"></span>D0</th>
-          <th class="num"><span class="swatch-cell" style="background:#FCD37F;"></span>D1</th>
-          <th class="num"><span class="swatch-cell" style="background:#FFAA00;"></span>D2</th>
-          <th class="num"><span class="swatch-cell" style="background:#E60000;"></span>D3</th>
-          <th class="num"><span class="swatch-cell" style="background:#730000;"></span>D4</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td><strong>Alabama</strong></td><td class="num">12.40</td><td class="num">18.60</td><td class="num">22.10</td><td class="num">24.70</td><td class="num">17.30</td><td class="num">4.90</td></tr><tr><td><strong>Arizona</strong></td><td class="num">8.10</td><td class="num">19.40</td><td class="num">27.80</td><td class="num">25.10</td><td class="num">14.20</td><td class="num">5.40</td></tr><tr><td><strong>Arkansas</strong></td><td class="num">15.20</td><td class="num">21.80</td><td class="num">28.40</td><td class="num">20.60</td><td class="num">9.70</td><td class="num">4.30</td></tr><tr><td><strong>California</strong></td><td class="num">22.60</td><td class="num">27.10</td><td class="num">22.90</td><td class="num">16.30</td><td class="num">8.40</td><td class="num">2.70</td></tr><tr><td><strong>Colorado</strong></td><td class="num">9.40</td><td class="num">19.80</td><td class="num">26.20</td><td class="num">22.00</td><td class="num">16.40</td><td class="num">6.20</td></tr><tr><td><strong>Florida</strong></td><td class="num">5.30</td><td class="num">11.20</td><td class="num">18.90</td><td class="num">26.40</td><td class="num">24.70</td><td class="num">13.50</td></tr><tr><td><strong>Georgia</strong></td><td class="num">8.10</td><td class="num">14.70</td><td class="num">23.00</td><td class="num">26.60</td><td class="num">19.10</td><td class="num">8.50</td></tr><tr><td><strong>Iowa</strong></td><td class="num">42.10</td><td class="num">25.60</td><td class="num">18.20</td><td class="num">10.30</td><td class="num">3.10</td><td class="num">0.70</td></tr><tr><td><strong>Kansas</strong></td><td class="num">7.00</td><td class="num">15.40</td><td class="num">22.80</td><td class="num">23.90</td><td class="num">19.50</td><td class="num">11.40</td></tr><tr><td><strong>Louisiana</strong></td><td class="num">14.60</td><td class="num">20.80</td><td class="num">25.10</td><td class="num">22.40</td><td class="num">12.30</td><td class="num">4.80</td></tr><tr><td><strong>Mississippi</strong></td><td class="num">11.30</td><td class="num">17.40</td><td class="num">24.60</td><td class="num">24.10</td><td class="num">16.20</td><td class="num">6.40</td></tr><tr><td><strong>Missouri</strong></td><td class="num">38.20</td><td class="num">27.10</td><td class="num">19.40</td><td class="num">10.80</td><td class="num">3.70</td><td class="num">0.80</td></tr><tr><td><strong>Nebraska</strong></td><td class="num">21.40</td><td class="num">24.80</td><td class="num">24.10</td><td class="num">16.70</td><td class="num">9.30</td><td class="num">3.70</td></tr><tr><td><strong>Nevada</strong></td><td class="num">14.50</td><td class="num">22.10</td><td class="num">24.60</td><td class="num">19.80</td><td class="num">12.60</td><td class="num">6.40</td></tr><tr><td><strong>New Mexico</strong></td><td class="num">6.20</td><td class="num">17.30</td><td class="num">24.90</td><td class="num">23.70</td><td class="num">17.40</td><td class="num">10.50</td></tr><tr><td><strong>North Carolina</strong></td><td class="num">10.40</td><td class="num">16.50</td><td class="num">22.70</td><td class="num">23.60</td><td class="num">18.90</td><td class="num">7.90</td></tr><tr><td><strong>Oklahoma</strong></td><td class="num">5.40</td><td class="num">14.20</td><td class="num">22.60</td><td class="num">24.40</td><td class="num">21.00</td><td class="num">12.40</td></tr><tr><td><strong>Oregon</strong></td><td class="num">18.40</td><td class="num">27.60</td><td class="num">23.10</td><td class="num">17.50</td><td class="num">9.70</td><td class="num">3.70</td></tr><tr><td><strong>South Carolina</strong></td><td class="num">9.70</td><td class="num">16.00</td><td class="num">22.40</td><td class="num">24.90</td><td class="num">19.30</td><td class="num">7.70</td></tr><tr><td><strong>Tennessee</strong></td><td class="num">13.10</td><td class="num">19.40</td><td class="num">24.80</td><td class="num">23.30</td><td class="num">14.20</td><td class="num">5.20</td></tr><tr><td><strong>Texas</strong></td><td class="num">31.20</td><td class="num">24.60</td><td class="num">22.20</td><td class="num">14.20</td><td class="num">6.30</td><td class="num">1.50</td></tr><tr><td><strong>Utah</strong></td><td class="num">12.40</td><td class="num">21.50</td><td class="num">25.60</td><td class="num">21.40</td><td class="num">13.40</td><td class="num">5.70</td></tr><tr><td><strong>Virginia</strong></td><td class="num">11.80</td><td class="num">17.60</td><td class="num">22.90</td><td class="num">24.00</td><td class="num">17.40</td><td class="num">6.30</td></tr><tr><td><strong>Washington</strong></td><td class="num">26.70</td><td class="num">28.40</td><td class="num">22.50</td><td class="num">14.60</td><td class="num">6.20</td><td class="num">1.60</td></tr>
-      </tbody>
+    <div id="tbl-loading" class="muted" style="padding:20px;">Computing from the grids&hellip;</div>
+    <table class="usdm-table" id="state-table" style="display:none;">
+      <thead><tr>
+        <th>State / UT</th>
+        <th class="num">None</th>
+        <th class="num"><span class="swatch-cell" style="background:#aaffaa;"></span>D0</th>
+        <th class="num"><span class="swatch-cell" style="background:#FFFF00;"></span>D1</th>
+        <th class="num"><span class="swatch-cell" style="background:#FFAA00;"></span>D2</th>
+        <th class="num"><span class="swatch-cell" style="background:#E60000;"></span>D3</th>
+        <th class="num"><span class="swatch-cell" style="background:#730000;"></span>D4</th>
+      </tr></thead>
+      <tbody id="tbl-body"></tbody>
     </table>
-
-    <p class="muted" style="font-size:13.5px;">Values shown are illustrative for the cloned demo. For the canonical values, download from <a href="data-download.html">Comprehensive Statistics</a>.</p>
-
+    <p class="muted" style="font-size:13px;">Percentages are by grid-cell count within each state at 0.0625&deg; resolution.</p>
   </main>
-
   <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/usda.svg" alt="USDA" />
-        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
-        <img src="assets/doc.svg" alt="Department of Commerce" />
-        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/imd.svg" alt="India Meteorological Department" />
+        <img src="assets/cwc.svg" alt="Central Water Commission" />
+        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
+        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
         <img src="assets/nasa.svg" alt="NASA" />
       </div>
       <p class="partner-blurb">
-        The U.S. Drought Monitor is produced through a partnership between the National Drought
-        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
-        Agriculture, the National Oceanic and Atmospheric Administration and the National
-        Aeronautics and Space Administration.
+        The India Drought Monitor is developed by the Water and Climate Lab at the Indian
+        Institute of Technology Gandhinagar, drawing on hydro-meteorological data from the
+        India Meteorological Department and the Central Water Commission, satellite products
+        from ISRO/NRSC, and global datasets from NASA.
       </p>
-
       <div class="contact-block">
         <div>
           <h3>Contact Us</h3>
-          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
-          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
-          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
-          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
-          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+          <p><strong>Water and Climate Lab</strong><br />Indian Institute of Technology Gandhinagar</p>
+          <p><span class="contact-icon">📍</span>Palaj, Gandhinagar</p>
+          <p><span class="contact-icon">@</span><a href="mailto:wcl@iitgn.ac.in">wcl@iitgn.ac.in</a></p>
         </div>
         <div>
           <h3>Maps</h3>
@@ -132,18 +94,100 @@
           <ul>
             <li><a href="data.html">Data Download</a></li>
             <li><a href="summary.html">National Summary</a></li>
-            <li><a href="about.html">What is the USDM?</a></li>
-            <li><a href="about.html">About the Data</a></li>
+            <li><a href="about.html">What is the IDM?</a></li>
             <li><a href="contact.html">Contact Authors</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-copy">
-        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+        © 2026 Water and Climate Lab · Indian Institute of Technology Gandhinagar · For research and demonstration purposes
       </div>
     </div>
   </footer>
+  <script src="assets/interactive/drought-map.colormaps.js"></script>
+  <script src="assets/interactive/drought-map.engine.js"></script>
+  <script src="assets/interactive/drought-map.app.js"></script>
+  <script>
+    var STATE_GRID=null, NAMES=null, currentRows=[];
 
-  <script src="assets/app.js"></script>
-</body>
-</html>
+    function classify(v, mn, mx) {
+      var n=(v-mn)/((mx-mn)||1);
+      if(n<0.12) return "D4"; if(n<0.25) return "D3"; if(n<0.40) return "D2";
+      if(n<0.55) return "D1"; if(n<0.75) return "D0"; return "None";
+    }
+
+    async function loadStateGrid() {
+      // state-id per 0.0625 cell, plus names
+      var rows = await alasql.promise("SELECT CAST([lat] AS FLOAT) AS lat, CAST([lng] AS FLOAT) AS lng, CAST([value] AS INT) AS sid FROM csv('./states_with_boundaries.csv', {headers:true, separator:','}) WHERE CAST([value] AS INT) >= 2");
+      var names = await (await fetch("./state_vector_boundaries.json")).json();
+      NAMES={}; names.forEach(function(p){ NAMES[p.state_id]=p.name; });
+      STATE_GRID=rows;
+    }
+
+    async function computeForDate(compact) {
+      var cdi = await alasql.promise("SELECT CAST([0] AS FLOAT) AS lat, CAST([1] AS FLOAT) AS lng, CAST([2] AS FLOAT) AS val FROM csv('./data/Drough_TS/CDI_"+compact+".txt', {headers:false, separator:' '}) WHERE [0] != 'NaN' AND [1] != 'NaN' AND [2] != 'NaN'");
+      if(!cdi.length) return [];
+      var mn=Math.min.apply(null,cdi.map(function(d){return d.val;})), mx=Math.max.apply(null,cdi.map(function(d){return d.val;}));
+      // index CDI by rounded lat/lng (0.25 grid centres at x.125)
+      var idx={};
+      cdi.forEach(function(p){ idx[p.lat.toFixed(3)+","+p.lng.toFixed(3)]=p.val; });
+      function nearest(lat,lng){
+        var deltas=[0,0.0625,-0.0625,0.125,-0.125];
+        for(var a=0;a<deltas.length;a++)for(var b=0;b<deltas.length;b++){
+          var k=(lat+deltas[a]).toFixed(3)+","+(lng+deltas[b]).toFixed(3);
+          if(k in idx) return idx[k];
+        }
+        var la=Math.round((lat-0.125)/0.25)*0.25+0.125, lo=Math.round((lng-0.125)/0.25)*0.25+0.125;
+        return idx[la.toFixed(3)+","+lo.toFixed(3)];
+      }
+      var tally={};
+      STATE_GRID.forEach(function(c){
+        var v=nearest(c.lat,c.lng); if(v==null||isNaN(v)) return;
+        var cls=classify(v,mn,mx);
+        if(!tally[c.sid]) tally[c.sid]={None:0,D0:0,D1:0,D2:0,D3:0,D4:0,tot:0};
+        tally[c.sid][cls]++; tally[c.sid].tot++;
+      });
+      var out=[];
+      Object.keys(tally).forEach(function(sid){
+        var t=tally[sid]; if(t.tot<8) return;
+        out.push({
+          name: NAMES[sid]||("State "+sid),
+          None:100*t.None/t.tot, D0:100*t.D0/t.tot, D1:100*t.D1/t.tot,
+          D2:100*t.D2/t.tot, D3:100*t.D3/t.tot, D4:100*t.D4/t.tot
+        });
+      });
+      return out;
+    }
+
+    function render(rows) {
+      var sort=document.getElementById("sort-select").value;
+      rows=rows.slice();
+      if(sort==="name") rows.sort(function(a,b){return a.name.localeCompare(b.name);});
+      else if(sort==="d4") rows.sort(function(a,b){return b.D4-a.D4;});
+      else rows.sort(function(a,b){return (b.D3+b.D4)-(a.D3+a.D4);});
+      var h="";
+      rows.forEach(function(r){
+        h+='<tr><td><strong>'+r.name+'</strong></td>'+
+           ['None','D0','D1','D2','D3','D4'].map(function(k){return '<td class="num">'+r[k].toFixed(2)+'</td>';}).join("")+'</tr>';
+      });
+      document.getElementById("tbl-body").innerHTML=h;
+    }
+
+    async function refresh(compact) {
+      document.getElementById("tbl-loading").style.display="block";
+      document.getElementById("state-table").style.display="none";
+      currentRows = await computeForDate(compact);
+      render(currentRows);
+      document.getElementById("tbl-loading").style.display="none";
+      document.getElementById("state-table").style.display="table";
+    }
+
+    window.addEventListener("DOMContentLoaded", async function () {
+      IDM.fillDateSelect(document.getElementById("date-select"));
+      await loadStateGrid();
+      await refresh("20260520");
+      document.getElementById("date-select").addEventListener("change", function(e){ refresh(e.target.value.replace(/-/g,"")); });
+      document.getElementById("sort-select").addEventListener("change", function(){ render(currentRows); });
+    });
+  </script>
+</body></html>

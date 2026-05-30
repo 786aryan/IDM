@@ -1,125 +1,87 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-IN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Comparison Slider | U.S. Drought Monitor</title>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Comparison Slider | India Drought Monitor</title>
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
-  
+  <link rel="stylesheet" href="assets/interactive/drought-map.css" />
+  <script src="assets/vendor/papaparse.min.js"></script>
+  <script src="assets/vendor/alasql.min.js"></script>
 </head>
 <body>
-
-  <header class="usdm-header">
-    <div class="usdm-header-inner">
-      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
-    </div>
-  </header>
-
+  <header class="usdm-header"><div class="usdm-header-inner"><h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1></div></header>
   <nav class="usdm-nav" aria-label="Primary">
     <div class="usdm-nav-inner">
       <a href="index.html">Current</a>
       <a href="maps.html" class="active">Maps</a>
       <a href="data.html">Data</a>
       <a href="summary.html">Summary</a>
+      <a href="conditions.html">Conditions &amp; Outlooks</a>
       <a href="about.html">About</a>
-      <a href="conditions.html">Conditions & Outlooks</a>
-      <a href="#">Ag in Drought</a>
-      <a href="#">En Español</a>
-      <a href="#">NADM</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
-
   <main class="usdm-main">
-<div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="maps.html">Maps</a> <span class="sep">/</span> Comparison Slider</div>
-
+    <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="maps.html">Maps</a> <span class="sep">/</span> Comparison Slider</div>
     <h1 class="page-title">Comparison Slider</h1>
-
     <p style="font-size:16.5px;max-width:80ch;color:#3a3431;">
-      Drag the vertical handle left or right to wipe between two USDM maps.
-      The left side shows the earlier map; the right side shows the more recent map.
+      Drag the handle to wipe between two weeks of the Combined Drought Index. Both maps are
+      rendered live from the data. Choose the weeks below.
     </p>
 
-    <div class="form-row">
-      <div class="form-group">
-        <span class="form-label">Left map</span>
-        <select aria-label="Left map date">
-          <option>April 28, 2026</option>
-          <option>May 5, 2026</option>
-          <option selected>May 12, 2026</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <span class="form-label">Right map</span>
-        <select aria-label="Right map date">
-          <option>May 5, 2026</option>
-          <option>May 12, 2026</option>
-          <option selected>May 19, 2026</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <span class="form-label">Area</span>
-        <select aria-label="Area">
-          <option>Continental U.S. (CONUS)</option>
-          <option>Total (incl. PR, AK, HI)</option>
-        </select>
-      </div>
+    <div class="idm-toolbar">
+      <div class="idm-tool-group"><span class="idm-tool-label">Older (left)</span><select id="date-old" aria-label="Older week"></select></div>
+      <div class="idm-tool-group"><span class="idm-tool-label">Newer (right)</span><select id="date-new" aria-label="Newer week"></select></div>
     </div>
 
-    <div class="slider-stage" aria-label="Map comparison slider">
-      <div class="slider-inner" id="slider-inner">
-        <img src="assets/map_20260519.png" alt="USDM map for May 19, 2026" />
-        <div class="clip"><img src="assets/map_20260512.png" alt="USDM map for May 12, 2026" /></div>
-        <div class="slider-handle" id="slider-handle" tabindex="0" role="slider" aria-label="Drag to compare maps"></div>
-        <div class="slider-label left">May 12, 2026</div>
-        <div class="slider-label right">May 19, 2026</div>
+    <div class="idm-slider-stage" id="slider-stage">
+      <div id="slider-loading"><div class="idm-spinner"></div><div>Loading data&hellip;</div></div>
+      <!-- base (newer) -->
+      <div class="idm-slider-layer">
+        <canvas id="N_raster" width="700" height="700"></canvas>
+        <canvas id="N_vector" width="700" height="700" style="display:none"></canvas>
       </div>
+      <!-- clipped (older) on top -->
+      <div class="idm-slider-clip" id="slider-clip">
+        <canvas id="O_raster" width="700" height="700"></canvas>
+        <canvas id="O_vector" width="700" height="700" style="display:none"></canvas>
+      </div>
+      <div class="idm-slider-handle" id="slider-handle"></div>
+      <div class="idm-slider-tag left" id="tag-old">older</div>
+      <div class="idm-slider-tag right" id="tag-new">newer</div>
     </div>
 
-    <h2>Intensity Legend</h2>
-    <div class="legend-grid">
-      <div class="legend-item"><span class="legend-swatch dnone"></span> <strong>None</strong></div>
-      <div class="legend-item"><span class="legend-swatch d1"></span> <strong>D1</strong></div>
-      <div class="legend-item"><span class="legend-swatch d3"></span> <strong>D3</strong></div>
-      <div class="legend-item"><span class="legend-swatch nodata"></span> <strong>No Data</strong></div>
-
-      <div class="legend-item"><span class="legend-swatch d0"></span> <strong>D0</strong></div>
-      <div class="legend-item"><span class="legend-swatch d2"></span> <strong>D2</strong></div>
-      <div class="legend-item"><span class="legend-swatch d4"></span> <strong>D4</strong></div>
-      <div></div>
+    <div class="idm-legend-inline">
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-none"></span>No Drought</span>
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-d0"></span>D0</span>
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-d1"></span>D1</span>
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-d2"></span>D2</span>
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-d3"></span>D3</span>
+      <span class="idm-legend-item"><span class="idm-legend-swatch sw-d4"></span>D4</span>
     </div>
-
-    <div class="alert-info mt-3">
-      <strong>Tip:</strong> the slider snaps near the edges. Tap or click anywhere on the map to
-      move the handle directly. On mobile, drag with one finger.
-    </div>
-
   </main>
-
   <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/usda.svg" alt="USDA" />
-        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
-        <img src="assets/doc.svg" alt="Department of Commerce" />
-        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/imd.svg" alt="India Meteorological Department" />
+        <img src="assets/cwc.svg" alt="Central Water Commission" />
+        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
+        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
         <img src="assets/nasa.svg" alt="NASA" />
       </div>
       <p class="partner-blurb">
-        The U.S. Drought Monitor is produced through a partnership between the National Drought
-        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
-        Agriculture, the National Oceanic and Atmospheric Administration and the National
-        Aeronautics and Space Administration.
+        The India Drought Monitor is developed by the Water and Climate Lab at the Indian
+        Institute of Technology Gandhinagar, drawing on hydro-meteorological data from the
+        India Meteorological Department and the Central Water Commission, satellite products
+        from ISRO/NRSC, and global datasets from NASA.
       </p>
-
       <div class="contact-block">
         <div>
           <h3>Contact Us</h3>
-          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
-          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
-          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
-          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
-          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+          <p><strong>Water and Climate Lab</strong><br />Indian Institute of Technology Gandhinagar</p>
+          <p><span class="contact-icon">📍</span>Palaj, Gandhinagar</p>
+          <p><span class="contact-icon">@</span><a href="mailto:wcl@iitgn.ac.in">wcl@iitgn.ac.in</a></p>
         </div>
         <div>
           <h3>Maps</h3>
@@ -136,18 +98,58 @@
           <ul>
             <li><a href="data.html">Data Download</a></li>
             <li><a href="summary.html">National Summary</a></li>
-            <li><a href="about.html">What is the USDM?</a></li>
-            <li><a href="about.html">About the Data</a></li>
+            <li><a href="about.html">What is the IDM?</a></li>
             <li><a href="contact.html">Contact Authors</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-copy">
-        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+        © 2026 Water and Climate Lab · Indian Institute of Technology Gandhinagar · For research and demonstration purposes
       </div>
     </div>
   </footer>
+  <script src="assets/interactive/drought-map.colormaps.js"></script>
+  <script src="assets/interactive/drought-map.engine.js"></script>
+  <script src="assets/interactive/drought-map.app.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      IDM.fillDateSelect(document.getElementById("date-old"), "2025-05-21");
+      IDM.fillDateSelect(document.getElementById("date-new"), "2026-05-20");
+      document.getElementById("tag-old").textContent = "2025-05-21";
+      document.getElementById("tag-new").textContent = "2026-05-20";
 
-  <script src="assets/app.js"></script>
-</body>
-</html>
+      (async function () {
+        // Non-interactive renderers (display only). size 700 to match canvas.
+        var older = IDM.buildMap(document.getElementById("O_raster"), document.getElementById("O_vector"), "cdi", { interactive:false, size:700 });
+        var newer = IDM.buildMap(document.getElementById("N_raster"), document.getElementById("N_vector"), "cdi", { interactive:false, size:700 });
+        await newer.init(); newer.renderStaticMap();   // newer shows current by default
+        await older.init();
+        await older.loadCDIDataForDate("20250521"); older.renderStaticMap();
+        document.getElementById("slider-loading").classList.add("idm-hidden");
+
+        document.getElementById("date-old").addEventListener("change", function(e){
+          document.getElementById("tag-old").textContent = e.target.value;
+          older.loadCDIDataForDate(e.target.value.replace(/-/g,"")).then(function(k){ if(k) older.renderStaticMap(); });
+        });
+        document.getElementById("date-new").addEventListener("change", function(e){
+          document.getElementById("tag-new").textContent = e.target.value;
+          newer.loadCDIDataForDate(e.target.value.replace(/-/g,"")).then(function(k){ if(k) newer.renderStaticMap(); });
+        });
+
+        // wipe handle
+        var stage=document.getElementById("slider-stage"), clip=document.getElementById("slider-clip"), handle=document.getElementById("slider-handle");
+        var dragging=false;
+        function setPct(p){ p=Math.max(2,Math.min(98,p)); stage.style.setProperty("--wipe", p+"%"); }
+        function fromX(clientX){ var r=stage.getBoundingClientRect(); setPct((clientX-r.left)/r.width*100); }
+        handle.addEventListener("mousedown", function(){ dragging=true; });
+        window.addEventListener("mouseup", function(){ dragging=false; });
+        window.addEventListener("mousemove", function(e){ if(dragging) fromX(e.clientX); });
+        stage.addEventListener("click", function(e){ fromX(e.clientX); });
+        handle.addEventListener("touchstart", function(){ dragging=true; }, {passive:true});
+        window.addEventListener("touchend", function(){ dragging=false; });
+        window.addEventListener("touchmove", function(e){ if(dragging&&e.touches[0]) fromX(e.touches[0].clientX); }, {passive:true});
+        setPct(50);
+      })();
+    });
+  </script>
+</body></html>

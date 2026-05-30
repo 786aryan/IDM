@@ -1,130 +1,100 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-IN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Conditions & Outlooks | U.S. Drought Monitor</title>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Conditions &amp; Outlooks | India Drought Monitor</title>
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
-  
+  <link rel="stylesheet" href="assets/interactive/drought-map.css" />
+  <script src="assets/vendor/papaparse.min.js"></script>
+  <script src="assets/vendor/alasql.min.js"></script>
 </head>
 <body>
-
-  <header class="usdm-header">
-    <div class="usdm-header-inner">
-      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
-    </div>
-  </header>
-
+  <header class="usdm-header"><div class="usdm-header-inner"><h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1></div></header>
   <nav class="usdm-nav" aria-label="Primary">
     <div class="usdm-nav-inner">
       <a href="index.html">Current</a>
       <a href="maps.html">Maps</a>
       <a href="data.html">Data</a>
       <a href="summary.html">Summary</a>
+      <a href="conditions.html" class="active">Conditions &amp; Outlooks</a>
       <a href="about.html">About</a>
-      <a href="conditions.html" class="active">Conditions & Outlooks</a>
-      <a href="#">Ag in Drought</a>
-      <a href="#">En Español</a>
-      <a href="#">NADM</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
-
   <main class="usdm-main">
-<div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> Conditions & Outlooks</div>
-
+    <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> Conditions &amp; Outlooks</div>
     <h1 class="page-title">Conditions &amp; Outlooks</h1>
-
-    <p style="font-size:17px;max-width:80ch;color:#3a3431;">
-      A weekly set of supporting products show the inputs the USDM authors review when drawing
-      the map — precipitation, streamflow, soil moisture, vegetation health, and forecast outlooks
-      from the Climate Prediction Center.
+    <p style="font-size:16.5px;max-width:80ch;color:#3a3431;">
+      The Combined Drought Index blends several standardised indicators. Switch between them here
+      to see the inputs behind the map &mdash; precipitation (SPI), runoff (SRI) and soil moisture
+      (SSMI) at multiple accumulation periods &mdash; plus short-range CDI forecasts. Every layer is
+      rendered live from the gridded data.
     </p>
 
-    <div class="card-grid">
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🌡</div>
-        <h3>Current Conditions</h3>
-        <p>Composite drought indicators, percentiles, and short- and long-term assessments published weekly.</p>
-        <span class="card-link">Open Current Conditions →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">📅</div>
-        <h3>Weekly Drought Indices</h3>
-        <p>SPI, SPEI, PDSI, EDDI, and other standard indices, updated weekly for use by USDM authors.</p>
-        <span class="card-link">Open Weekly Drought Indices →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🔭</div>
-        <h3>Outlooks</h3>
-        <p>The Climate Prediction Center's 6–10 day, 8–14 day, monthly and seasonal drought outlooks.</p>
-        <span class="card-link">Open Outlooks →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🌧</div>
-        <h3>Precipitation Analysis</h3>
-        <p>NWS-AHPS precipitation analyses for 7-, 14-, 30-, 60-, 90-day and longer windows.</p>
-        <span class="card-link">Open Precipitation Analysis →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🌾</div>
-        <h3>Vegetation Drought Response (VegDRI)</h3>
-        <p>Satellite-based assessment of vegetation stress combining VHI with climate and biophysical data.</p>
-        <span class="card-link">Open VegDRI →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🏔</div>
-        <h3>Mountain Snowpack</h3>
-        <p>SNOTEL snow water equivalent percentiles across the western U.S. mountain ranges.</p>
-        <span class="card-link">Open Mountain Snowpack →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🌱</div>
-        <h3>Soil Moisture</h3>
-        <p>NASA SPoRT, CPC-Leaky, and NLDAS soil-moisture percentiles across surface and root-zone depths.</p>
-        <span class="card-link">Open Soil Moisture →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🌊</div>
-        <h3>Streamflow</h3>
-        <p>USGS daily streamflow percentiles and 7-day, 14-day, 28-day average flow conditions nationwide.</p>
-        <span class="card-link">Open Streamflow →</span>
-      </a>
+    <div class="idm-toolbar">
+      <div class="idm-tool-group">
+        <span class="idm-tool-label">Product</span>
+        <select id="product-select" aria-label="Choose product"></select>
+      </div>
+      <div class="idm-tool-group">
+        <span class="idm-tool-label">Jump to State</span>
+        <select id="state-select"><option value="">— Select a state / UT —</option></select>
+      </div>
+      <button type="button" class="idm-btn ghost" id="reset-view">&#8635; Reset view</button>
+      <button type="button" class="idm-btn ghost" id="zoom-mode" aria-pressed="false">&#9783; Rectangle zoom: OFF</button>
     </div>
 
+    <div class="idm-viewer-grid">
+      <div class="idm-map-panel">
+        <div id="idm-map-loading"><div class="idm-spinner"></div><div>Loading data&hellip;</div></div>
+        <div class="idm-canvas-stage">
+          <canvas id="C_vector" width="840" height="840"></canvas>
+          <canvas id="C_raster" width="840" height="840"></canvas>
+        </div>
+      </div>
+      <aside class="idm-rail">
+        <div class="idm-card">
+          <h3>Cursor Readout</h3>
+          <div class="idm-readout-row"><span class="k">Latitude</span><span class="v" id="ro-lat">—</span></div>
+          <div class="idm-readout-row"><span class="k">Longitude</span><span class="v" id="ro-lng">—</span></div>
+          <div class="idm-readout-row"><span class="k">Value</span><span class="v" id="ro-val">—</span></div>
+          <div class="idm-readout-row"><span class="k">State / UT</span><span class="v" id="ro-state">—</span></div>
+          <div class="idm-readout-row"><span class="k">Class</span><span class="v" id="ro-cls">—</span></div>
+          <p class="idm-readout-hint">Negative index values indicate drier-than-normal conditions.</p>
+        </div>
+        <div class="idm-card">
+          <h3>About the Indices</h3>
+          <p style="font-size:13.5px;color:#3a3431;line-height:1.55;margin:0;">
+            <strong>SPI</strong> standardises precipitation; <strong>SRI</strong> standardises
+            runoff; <strong>SSMI</strong> standardises soil moisture. The number of months is the
+            accumulation window. Forecast layers show the expected CDI 7&ndash;30 days ahead.
+          </p>
+        </div>
+      </aside>
+    </div>
   </main>
-
   <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/usda.svg" alt="USDA" />
-        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
-        <img src="assets/doc.svg" alt="Department of Commerce" />
-        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/imd.svg" alt="India Meteorological Department" />
+        <img src="assets/cwc.svg" alt="Central Water Commission" />
+        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
+        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
         <img src="assets/nasa.svg" alt="NASA" />
       </div>
       <p class="partner-blurb">
-        The U.S. Drought Monitor is produced through a partnership between the National Drought
-        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
-        Agriculture, the National Oceanic and Atmospheric Administration and the National
-        Aeronautics and Space Administration.
+        The India Drought Monitor is developed by the Water and Climate Lab at the Indian
+        Institute of Technology Gandhinagar, drawing on hydro-meteorological data from the
+        India Meteorological Department and the Central Water Commission, satellite products
+        from ISRO/NRSC, and global datasets from NASA.
       </p>
-
       <div class="contact-block">
         <div>
           <h3>Contact Us</h3>
-          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
-          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
-          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
-          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
-          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+          <p><strong>Water and Climate Lab</strong><br />Indian Institute of Technology Gandhinagar</p>
+          <p><span class="contact-icon">📍</span>Palaj, Gandhinagar</p>
+          <p><span class="contact-icon">@</span><a href="mailto:wcl@iitgn.ac.in">wcl@iitgn.ac.in</a></p>
         </div>
         <div>
           <h3>Maps</h3>
@@ -141,18 +111,28 @@
           <ul>
             <li><a href="data.html">Data Download</a></li>
             <li><a href="summary.html">National Summary</a></li>
-            <li><a href="about.html">What is the USDM?</a></li>
-            <li><a href="about.html">About the Data</a></li>
+            <li><a href="about.html">What is the IDM?</a></li>
             <li><a href="contact.html">Contact Authors</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-copy">
-        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+        © 2026 Water and Climate Lab · Indian Institute of Technology Gandhinagar · For research and demonstration purposes
       </div>
     </div>
   </footer>
-
-  <script src="assets/app.js"></script>
-</body>
-</html>
+  <script src="assets/interactive/drought-map.colormaps.js"></script>
+  <script src="assets/interactive/drought-map.engine.js"></script>
+  <script src="assets/interactive/drought-map.app.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      IDM.fillProductSelect(document.getElementById("product-select"), "cdi");
+      IDM.mountMap({
+        raster:"C_raster", vector:"C_vector", product:"cdi",
+        productSelect:"product-select", stateSelect:"state-select", resetBtn:"reset-view", zoomModeBtn:"zoom-mode",
+        readout:{lat:"ro-lat",lng:"ro-lng",val:"ro-val",state:"ro-state",cls:"ro-cls"},
+        loader:"#idm-map-loading"
+      });
+    });
+  </script>
+</body></html>

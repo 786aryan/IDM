@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-IN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Current Map | U.S. Drought Monitor</title>
+  <title>Current Map | India Drought Monitor</title>
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/interactive/drought-map.css" />
+  <script src="assets/vendor/papaparse.min.js"></script>
+  <script src="assets/vendor/alasql.min.js"></script>
 </head>
 <body>
 
   <header class="usdm-header">
     <div class="usdm-header-inner">
-      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
+      <h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1>
     </div>
   </header>
 
@@ -21,11 +24,9 @@
       <a href="maps.html">Maps</a>
       <a href="data.html">Data</a>
       <a href="summary.html">Summary</a>
-      <a href="about.html">About</a>
       <a href="conditions.html">Conditions &amp; Outlooks</a>
-      <a href="#">Ag in Drought</a>
-      <a href="#">En Español</a>
-      <a href="#">NADM</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
 
@@ -33,97 +34,96 @@
 
     <div class="page-title-row">
       <div class="release-block">
-        <h2>Map released: May 21, 2026</h2>
-        <div class="data-valid">Data valid: May 19, 2026</div>
-      </div>
-      <div class="map-controls">
-        <label class="checkbox-row">
-          <input type="checkbox" id="gray-chk" />
-          View grayscale version of the map
-        </label>
+        <h2>Current Drought Conditions</h2>
+        <div class="data-valid">Combined Drought Index &middot; week of May 20, 2026</div>
       </div>
     </div>
 
-    <div class="map-wrap">
-      <img class="map-img" src="assets/map_20260519.png" alt="U.S. Drought Monitor map for May 19, 2026" />
+    <p style="font-size:16.5px;max-width:80ch;color:#3a3431;margin-bottom:16px;">
+      This is the live India Drought Monitor &mdash; an interactive map of the Combined Drought
+      Index built directly from the underlying gridded data. Hover anywhere to read the exact
+      value and drought class, drag to zoom, click or pick a state to focus it, and step through
+      the weekly record. Developed by the <strong>Water and Climate Lab, IIT Gandhinagar</strong>.
+    </p>
+
+    <!-- toolbar -->
+    <div class="idm-toolbar" role="region" aria-label="Map controls">
+      <div class="idm-tool-group">
+        <span class="idm-tool-label">Week</span>
+        <select id="date-select" aria-label="Choose week"></select>
+      </div>
+      <div class="idm-tool-group">
+        <span class="idm-tool-label">Jump to State</span>
+        <select id="state-select" aria-label="Jump to state">
+          <option value="">— Select a state / UT —</option>
+        </select>
+      </div>
+      <button type="button" class="idm-btn ghost" id="reset-view">&#8635; Reset view</button>
+      <button type="button" class="idm-btn ghost" id="zoom-mode" aria-pressed="false">&#9783; Rectangle zoom: OFF</button>
+      <label class="idm-check"><input type="checkbox" id="isolate-toggle" checked /> Isolate selected state</label>
     </div>
 
-    <div class="authors">
-      <div>
-        <strong>United States and Puerto Rico Author(s):</strong><br/>
-        <a href="contact.html">Rocky Bilotta</a>, NOAA/NCEI
-      </div>
-      <div>
-        <strong>Pacific Islands and Virgin Islands Author(s):</strong><br/>
-        <a href="contact.html">Tsegaye Tadesse</a>, National Drought Mitigation Center
-      </div>
-    </div>
-
-    <div class="row cols-2 mb-3">
-      <div>
-        <p style="margin-bottom:10px;">More maps and statistics:</p>
-        <a class="btn" href="#">U.S. States and Puerto Rico</a>
-        <a class="btn" href="#">Continental U.S.</a>
-        <span class="btn-group">
-          <a class="btn dropdown" href="#" role="button">Regions</a>
-          <div class="dropdown-menu">
-            <a href="#">High Plains</a>
-            <a href="#">Midwest</a>
-            <a href="#">Northeast</a>
-            <a href="#">South</a>
-            <a href="#">Southeast</a>
-            <a href="#">West</a>
-            <a href="#">Caribbean</a>
-            <a href="#">Pacific</a>
-          </div>
-        </span>
-      </div>
-      <div>
-        <div class="alert-info">
-          The data cutoff for Drought Monitor maps is each Tuesday at <strong>8 a.m. EDT</strong>.
-          The maps, which are based on analysis of the data, are released each Thursday at
-          <strong>8:30 a.m. Eastern Time</strong>.
+    <div class="idm-viewer-grid">
+      <div class="idm-map-panel" aria-label="Interactive drought map">
+        <div id="idm-map-loading">
+          <div class="idm-spinner" role="status" aria-label="Loading map"></div>
+          <div>Loading boundaries &amp; drought data&hellip;</div>
+        </div>
+        <div class="idm-canvas-stage">
+          <canvas id="C_vector" width="840" height="840"></canvas>
+          <canvas id="C_raster" width="840" height="840"></canvas>
         </div>
       </div>
+
+      <aside class="idm-rail">
+        <div class="idm-card">
+          <h3>Cursor Readout</h3>
+          <div class="idm-readout-row"><span class="k">Latitude</span><span class="v" id="ro-lat">—</span></div>
+          <div class="idm-readout-row"><span class="k">Longitude</span><span class="v" id="ro-lng">—</span></div>
+          <div class="idm-readout-row"><span class="k">CDI value</span><span class="v" id="ro-val">—</span></div>
+          <div class="idm-readout-row"><span class="k">State / UT</span><span class="v" id="ro-state">—</span></div>
+          <div class="idm-readout-row"><span class="k">Class</span><span class="v" id="ro-cls">—</span></div>
+          <p class="idm-readout-hint">Move your cursor over the map to inspect any 0.25&deg; grid cell.</p>
+        </div>
+        <div class="idm-card">
+          <h3>Drought Classes</h3>
+          <div class="idm-legend-list">
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-none"></span> No Drought</div>
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-d0"></span> D0 — Abnormally Dry</div>
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-d1"></span> D1 — Moderate</div>
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-d2"></span> D2 — Severe</div>
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-d3"></span> D3 — Extreme</div>
+            <div class="idm-legend-item"><span class="idm-legend-swatch sw-d4"></span> D4 — Exceptional</div>
+          </div>
+        </div>
+      </aside>
     </div>
 
-    <section class="legend-section">
-      <h2>Intensity and Impacts</h2>
-      <div class="legend-grid">
-        <div class="legend-item"><span class="legend-swatch dnone"></span> <strong>None</strong></div>
-        <div class="legend-item"><span class="legend-swatch d1"></span> <strong>D1</strong> (Moderate Drought)</div>
-        <div class="legend-item"><span class="legend-swatch d3"></span> <strong>D3</strong> (Extreme Drought)</div>
-        <div class="legend-item"><span class="legend-swatch nodata"></span> <strong>No Data</strong></div>
-
-        <div class="legend-item"><span class="legend-swatch d0"></span> <strong>D0</strong> (Abnormally Dry)</div>
-        <div class="legend-item"><span class="legend-swatch d2"></span> <strong>D2</strong> (Severe Drought)</div>
-        <div class="legend-item"><span class="legend-swatch d4"></span> <strong>D4</strong> (Exceptional Drought)</div>
-        <div></div>
+    <!-- animation -->
+    <h2>Animate the Record</h2>
+    <p style="max-width:80ch;color:#3a3431;">Play through the weekly CDI series (July 2021 onward). The current week is stamped on the map as it plays.</p>
+    <div class="idm-anim-panel">
+      <div class="idm-field"><label for="anim_start_date">Start week</label><input type="date" id="anim_start_date" value="2021-07-14" min="2021-07-14" max="2026-05-20" /></div>
+      <div class="idm-field"><label for="anim_end_date">End week</label><input type="date" id="anim_end_date" value="2026-05-20" min="2021-07-14" max="2026-05-20" /></div>
+      <div class="idm-field"><label for="anim_fps">Frames / sec</label><input type="number" id="anim_fps" value="3" min="1" max="15" /></div>
+      <div class="idm-anim-actions">
+        <button type="button" class="idm-btn" id="btn_start_anim">&#9654; Play</button>
+        <button type="button" class="idm-btn ghost" id="btn_stop_anim">&#9632; Stop</button>
       </div>
-
-      <div class="impact-grid">
-        <div class="impact-item"><span class="impact-line"></span> Delineates dominant impacts</div>
-        <div class="impact-item"><span class="imp-key">S</span> — Short-term impacts, typically less than 6 months (agriculture, grasslands)</div>
-        <div class="impact-item"><span class="imp-key">L</span> — Long-term impacts, typically greater than 6 months (hydrology, ecology)</div>
-        <div class="impact-item"><span class="imp-key">SL</span> — Short- and long-term impacts</div>
-      </div>
-    </section>
+    </div>
 
     <hr class="soft" />
-
     <section>
       <h2>This Week's Summary</h2>
       <p class="summary-section lead">
-        During the week, the contiguous United States exhibited significant regional temperature
-        anomalies driven by a highly amplified synoptic pattern. A pronounced unseasonable cold
-        air mass influenced the Northern Plains, Upper Midwest, and Northeast, depressing
-        temperatures 5°F to 15°F below normal across the Dakotas, Minnesota, New York, and
-        Pennsylvania. Conversely, the Southwest and South Texas experienced anomalous warmth,
-        with maximum temperatures exceeding 90°F.
+        Large parts of peninsular and central India continue to show rainfall deficits as the
+        pre-monsoon period advances. The Combined Drought Index indicates severe-to-extreme
+        conditions across interior Maharashtra, northern Karnataka, Telangana and parts of
+        Rajasthan, while improved soil moisture has eased conditions over the eastern Gangetic
+        plains. Reservoir storage in several western and southern basins remains below the
+        ten-year average, sustaining short-term agricultural stress.
       </p>
-      <p>
-        <a class="btn" href="summary.html">Read the Full National Summary</a>
-      </p>
+      <p><a class="btn" href="summary.html">Read the Full National Summary</a></p>
     </section>
 
   </main>
@@ -131,27 +131,24 @@
   <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/usda.svg" alt="USDA" />
-        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
-        <img src="assets/doc.svg" alt="Department of Commerce" />
-        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/imd.svg" alt="India Meteorological Department" />
+        <img src="assets/cwc.svg" alt="Central Water Commission" />
+        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
+        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
         <img src="assets/nasa.svg" alt="NASA" />
       </div>
       <p class="partner-blurb">
-        The U.S. Drought Monitor is produced through a partnership between the National Drought
-        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
-        Agriculture, the National Oceanic and Atmospheric Administration and the National
-        Aeronautics and Space Administration.
+        The India Drought Monitor is developed by the Water and Climate Lab at the Indian
+        Institute of Technology Gandhinagar, drawing on hydro-meteorological data from the
+        India Meteorological Department and the Central Water Commission, satellite products
+        from ISRO/NRSC, and global datasets from NASA.
       </p>
-
       <div class="contact-block">
         <div>
           <h3>Contact Us</h3>
-          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
-          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
-          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
-          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
-          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+          <p><strong>Water and Climate Lab</strong><br />Indian Institute of Technology Gandhinagar</p>
+          <p><span class="contact-icon">📍</span>Palaj, Gandhinagar</p>
+          <p><span class="contact-icon">@</span><a href="mailto:wcl@iitgn.ac.in">wcl@iitgn.ac.in</a></p>
         </div>
         <div>
           <h3>Maps</h3>
@@ -168,18 +165,38 @@
           <ul>
             <li><a href="data.html">Data Download</a></li>
             <li><a href="summary.html">National Summary</a></li>
-            <li><a href="about.html">What is the USDM?</a></li>
-            <li><a href="about.html#data">About the Data</a></li>
+            <li><a href="about.html">What is the IDM?</a></li>
             <li><a href="contact.html">Contact Authors</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-copy">
-        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+        © 2026 Water and Climate Lab · Indian Institute of Technology Gandhinagar · For research and demonstration purposes
       </div>
     </div>
   </footer>
 
-  <script src="assets/app.js"></script>
+  <script src="assets/interactive/drought-map.colormaps.js"></script>
+  <script src="assets/interactive/drought-map.engine.js"></script>
+  <script src="assets/interactive/drought-map.app.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      IDM.fillDateSelect(document.getElementById("date-select"));
+      IDM.mountMap({
+        raster: "C_raster", vector: "C_vector", product: "cdi",
+        stateSelect: "state-select", dateSelect: "date-select",
+        resetBtn: "reset-view", zoomModeBtn: "zoom-mode", isolateChk: "isolate-toggle",
+        readout: { lat:"ro-lat", lng:"ro-lng", val:"ro-val", state:"ro-state", cls:"ro-cls" },
+        animControls: {
+          btnStart: document.getElementById("btn_start_anim"),
+          btnStop: document.getElementById("btn_stop_anim"),
+          startDate: document.getElementById("anim_start_date"),
+          endDate: document.getElementById("anim_end_date"),
+          fps: document.getElementById("anim_fps")
+        },
+        loader: "#idm-map-loading"
+      });
+    });
+  </script>
 </body>
 </html>

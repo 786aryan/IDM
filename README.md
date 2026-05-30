@@ -1,70 +1,99 @@
-# U.S. Drought Monitor — Clone
+# India Drought Monitor (IDM)
 
-A faithful, working clone of the U.S. Drought Monitor (droughtmonitor.unl.edu),
-built from the supplied HTML mirror and walkthrough video.
+A fully data-driven web front end for the India Drought Monitor, developed for the
+**Water and Climate Lab (WCL), IIT Gandhinagar**. The site structure and styling
+follow the U.S. Drought Monitor, re-implemented for India (Regions -> States).
+
+**Every map on the site is rendered live in the browser from the gridded data
+files — there are no pre-rendered map images.**
 
 ## How to view
 
-Just open `index.html` in a browser. Everything works from disk — no server required.
-All cross-page links use relative paths.
-
-For the cleanest experience, you can also serve the folder over a local server:
+The site must be served over HTTP (the maps fetch data files, which the `file://`
+protocol blocks):
 
 ```bash
-cd usdm_clone_final
+cd IDM
 python3 -m http.server 8000
-# then open http://localhost:8000
+# open http://localhost:8000
 ```
 
-## Pages (15 total)
+Works as-is on GitHub Pages.
 
-- **index.html** — Current Map (home). Real May 19, 2026 USDM map with grayscale toggle,
-  authors block, data cutoff alert, full D0–D4 legend with impact key, summary excerpt
-- **maps.html** — Maps landing (7 product cards)
-- **compare.html** — Compare Two Weeks side-by-side with stat bars
-- **slider.html** — Comparison Slider — drag the red handle to wipe between two weeks
-- **animations.html** — Multi-week animation player (Play/Pause/Prev/Next + scrubber)
-- **archive.html** — Map Archive thumbnails
-- **data.html** — Data landing (9 data product cards)
-- **data-download.html** — Comprehensive Statistics form + preview table
-- **data-tables.html** — State-by-state breakdown table
-- **data-graphs.html** — Stacked-area time-series SVG chart (2000–2026)
-- **summary.html** — National Drought Summary — full text for all 8 regions
-- **about.html** — What is the USDM?
-- **conditions.html** — Conditions & Outlooks landing (8 product cards)
-- **contact.html** — Contact authors and NDMC
-
-## Interactive features (all client-side, no JS dependencies)
-
-- Map grayscale toggle (home page)
-- Dropdown menus (Regions)
-- Comparison slider with mouse + touch drag
-- Animation player with looping playback, scrubbing, step controls
-- All form controls (selects, date pickers, search fields)
-
-## Files
+## Architecture
 
 ```
-usdm_clone_final/
-├── index.html
-├── maps.html, data.html, summary.html, about.html, ...
-└── assets/
-    ├── styles.css      (shared design system)
-    ├── app.js          (interactive features)
-    ├── map_20260519.png, map_20260512.png, map_20260505.png, map_20260428.png
-    └── usda.svg, ndmc.svg, doc.svg, noaa.svg, nasa.svg
+assets/interactive/
+├── drought-map.core.js     verbatim copy of pranav-joshi-iitgn/IndiaDroughtMonitor/script.js
+│                           (kept for reference; unmodified)
+├── drought-map.engine.js   a factory wrapper around that same code: createDroughtMap(opts).
+│                           Pranav's rendering/interpolation/zoom/animation logic is byte-for-byte
+│                           identical; only the hardcoded canvas + file references became opts.
+├── drought-map.app.js      site controller: product catalogue (CDI, SPI, SRI, SSMI, forecasts),
+│                           weekly date list, and helpers that wire page controls to the engine.
+├── drought-map.colormaps.js EXACT colour-maps transcribed from the old WCL site
+│                           (Legend*.jsx): CDI, SPI/SRI/SSMI, streamflow, persistence.
+│                           Maps are keyed to ACTUAL data values, not min/max.
+└── drought-map.css         shared map / control-panel styling (USDM look).
 ```
 
-## Design notes
+A page builds one or more maps with `IDM.mountMap({...})` or `IDM.buildMap(...)`,
+each pointing at a data grid. The engine reads the grid via AlaSQL and paints the
+canvas. The same engine drives the single-map pages and the two-map pages
+(Compare, Slider).
 
-- **Typography**: Lora (display) + Source Sans 3 (body) loaded from Google Fonts
-- **Color palette**: Official USDM red (#da3910) for nav, official D0–D4 intensity colors for the legend and charts
-- **Layout**: CSS Grid throughout, 1280px max page width, fully responsive down to mobile
-- **No frameworks**: vanilla HTML/CSS/JS — no Bootstrap, no React, no build step
+
+### Map interactions
+
+- **Zoom modes** — a toolbar button toggles between click-state-zoom and a
+  rectangle (drag-a-box) zoom; right-click always resets the view.
+- **Comparison slider** — two identical full-size maps overlaid; the top (older)
+  layer is revealed up to a draggable handle via CSS `clip-path` (never resized).
+
+### Libraries
+
+PapaParse and AlaSQL are vendored under `assets/vendor/` (no CDN; works offline).
+
+## Pages (all live)
+
+- **index.html** — Current Map. The live interactive CDI map with week selector,
+  state jump, zoom, hover readout, isolate toggle, and an animation player.
+- **maps.html** — Maps landing.
+- **compare.html** — two live maps side by side, independent week pickers.
+- **slider.html** — two live maps with a draggable wipe handle.
+- **animations.html** — live week-by-week playback of the CDI record.
+- **archive.html** — render any week back to July 2021, then zoom/inspect.
+- **conditions.html** — one live map with a product switcher (SPI / SRI / SSMI at
+  several windows, plus 7/15/30-day CDI forecasts).
+- **data.html** — Data landing.
+- **data-graphs.html** — stacked-area chart of national % area per drought class,
+  drawn live from `India_Drought_Area_Timeseries.txt`.
+- **data-tables.html** — per-state drought percentages, computed live in the browser
+  from the CDI grid + state grid for any selected week.
+- **data-download.html** — download links for every raw data product.
+- **summary.html / about.html / contact.html** — India-specific narrative pages.
 
 ## Data
 
-The drought maps are the real USDM PNGs from your mirror (May 19, 12, 5, and April 28,
-2026). The regional summary narrative on `summary.html` is the actual text from the
-mirror's Summary page. The numeric values in `data-download.html`, `data-tables.html`,
-and `data-graphs.html` are illustrative placeholders for the clone demo.
+```
+data/
+├── Current_CDI.txt                     latest weekly CDI
+├── Future_CDI_{7,15,30}day.txt         short-range CDI forecasts
+├── SPI_*.txt SRI_*.txt SSMI_*.txt      standardised indices (multiple windows)
+├── {P,R,SM}_mag_*.txt                  precip / runoff / soil-moisture magnitudes
+├── drought_persist_*.txt               persistence forecasts
+├── India_Drought_Area_Timeseries.txt   weekly national % area per class
+└── Drough_TS/CDI_YYYYMMDD.txt          253 weekly CDI grids (Jul 2021 -> May 2026)
+state_vector_boundaries.json            state/UT polygons + names
+states_with_boundaries.csv              rasterised state-id grid (0.0625 deg)
+india_mainland_boundary.csv             national outline
+```
+
+Every grid is whitespace-separated `latitude longitude value` (CDI/indices: negative =
+drier). Drought classes follow the six-bucket CDI scale (No Drought -> D0 -> ... -> D4).
+
+## Credits
+
+- Interactive drought-map engine: Pranav Joshi (pranav-joshi-iitgn/IndiaDroughtMonitor).
+- Structure/styling adapted from the U.S. Drought Monitor.
+- Developed for the Water and Climate Lab, IIT Gandhinagar.

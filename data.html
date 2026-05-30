@@ -1,139 +1,73 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-IN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Data | U.S. Drought Monitor</title>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data | India Drought Monitor</title>
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
-  
 </head>
 <body>
-
-  <header class="usdm-header">
-    <div class="usdm-header-inner">
-      <h1 class="usdm-title"><a href="index.html">U.S. Drought Monitor</a></h1>
-    </div>
-  </header>
-
+  <header class="usdm-header"><div class="usdm-header-inner"><h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1></div></header>
   <nav class="usdm-nav" aria-label="Primary">
     <div class="usdm-nav-inner">
       <a href="index.html">Current</a>
       <a href="maps.html">Maps</a>
       <a href="data.html" class="active">Data</a>
       <a href="summary.html">Summary</a>
+      <a href="conditions.html">Conditions &amp; Outlooks</a>
       <a href="about.html">About</a>
-      <a href="conditions.html">Conditions & Outlooks</a>
-      <a href="#">Ag in Drought</a>
-      <a href="#">En Español</a>
-      <a href="#">NADM</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
-
   <main class="usdm-main">
-<div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> Data</div>
-
-    <div class="page-title-row">
-      <h1 class="page-title">Data</h1>
-    </div>
-
+    <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> Data</div>
+    <h1 class="page-title">Data</h1>
     <p style="font-size:17px;max-width:80ch;color:#3a3431;margin-bottom:32px;">
-      Download U.S. Drought Monitor data in a format that fits your work — comprehensive
-      statistics, the Drought Severity and Coverage Index (DSCI), counts of weeks in drought,
-      population in drought, threshold queries, GIS shapefiles, and metadata.
+      The India Drought Monitor is built on open gridded data. Explore the national time series,
+      compute per-state statistics for any week, or download the raw grids for your own analysis.
     </p>
-
     <div class="card-grid">
-      <a class="card" href="data-download.html" style="text-decoration:none;color:inherit;">
-        <div class="icon">📈</div>
-        <h3>Comprehensive Statistics</h3>
-        <p>All USDM categories for every week of a selected time period and location. Options include percent of area, total area, percent of population, and total population.</p>
-        <span class="card-link">Open Comprehensive Statistics →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">📊</div>
-        <h3>DSCI Statistics</h3>
-        <p>Drought Severity and Coverage Index — a single value summarizing both severity and extent for a given area and date range.</p>
-        <span class="card-link">Open DSCI Statistics →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">⊞</div>
-        <h3>Statistics by Threshold</h3>
-        <p>Pick a place, time, and minimum or maximum drought level — get the proportion of that area meeting your criteria.</p>
-        <span class="card-link">Open Statistics by Threshold →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">📅</div>
-        <h3>Weeks In Drought</h3>
-        <p>How many weeks has an area been in each USDM category? Track cumulative drought weeks at the threshold of your choice.</p>
-        <span class="card-link">Open Weeks In Drought →</span>
-      </a>
-
-      <a class="card" href="data-tables.html" style="text-decoration:none;color:inherit;">
-        <div class="icon">▤</div>
-        <h3>Data Tables</h3>
-        <p>The week's USDM statistics displayed as sortable tables — by state, by county, or by climate region.</p>
-        <span class="card-link">Open Data Tables →</span>
-      </a>
-
       <a class="card" href="data-graphs.html" style="text-decoration:none;color:inherit;">
-        <div class="icon">📉</div>
-        <h3>Data Graphs &amp; Time Series</h3>
-        <p>Stacked area charts of percent area in each USDM category over time, for any region from 2000 to present.</p>
-        <span class="card-link">Open Data Graphs →</span>
+        <div class="icon">&#128200;</div>
+        <h3>Data Graphs</h3>
+        <p>A live stacked-area chart of the percent of India in each drought class, every week since 2021.</p>
+        <span class="card-link">Open Data Graphs &rarr;</span>
       </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🌎</div>
-        <h3>GIS Data</h3>
-        <p>Download USDM shapefiles, KML/KMZ, and Esri JSON for use in your own mapping software.</p>
-        <span class="card-link">Open GIS Data →</span>
+      <a class="card" href="data-tables.html" style="text-decoration:none;color:inherit;">
+        <div class="icon">&#128202;</div>
+        <h3>Data Tables</h3>
+        <p>Per-state and union-territory drought percentages, computed live from the grids for any week.</p>
+        <span class="card-link">Open Data Tables &rarr;</span>
       </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🗒</div>
-        <h3>Metadata</h3>
-        <p>Data dictionaries, lineage, attribution requirements, and the formal metadata records for the USDM.</p>
-        <span class="card-link">Open Metadata →</span>
-      </a>
-
-      <a class="card" href="#" style="text-decoration:none;color:inherit;">
-        <div class="icon">🏛</div>
-        <h3>State Impacts</h3>
-        <p>State-by-state drought impact reports and the latest impacts entered into the Drought Impact Reporter.</p>
-        <span class="card-link">Open State Impacts →</span>
+      <a class="card" href="data-download.html" style="text-decoration:none;color:inherit;">
+        <div class="icon">&#11015;</div>
+        <h3>Data Download</h3>
+        <p>Download the raw CDI, SPI, SRI, SSMI and forecast grids, plus the national time series.</p>
+        <span class="card-link">Open Data Download &rarr;</span>
       </a>
     </div>
-
   </main>
-
   <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/usda.svg" alt="USDA" />
-        <img src="assets/ndmc.svg" alt="National Drought Mitigation Center" />
-        <img src="assets/doc.svg" alt="Department of Commerce" />
-        <img src="assets/noaa.svg" alt="NOAA" />
+        <img src="assets/imd.svg" alt="India Meteorological Department" />
+        <img src="assets/cwc.svg" alt="Central Water Commission" />
+        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
+        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
         <img src="assets/nasa.svg" alt="NASA" />
       </div>
       <p class="partner-blurb">
-        The U.S. Drought Monitor is produced through a partnership between the National Drought
-        Mitigation Center at the University of Nebraska–Lincoln, the United States Department of
-        Agriculture, the National Oceanic and Atmospheric Administration and the National
-        Aeronautics and Space Administration.
+        The India Drought Monitor is developed by the Water and Climate Lab at the Indian
+        Institute of Technology Gandhinagar, drawing on hydro-meteorological data from the
+        India Meteorological Department and the Central Water Commission, satellite products
+        from ISRO/NRSC, and global datasets from NASA.
       </p>
-
       <div class="contact-block">
         <div>
           <h3>Contact Us</h3>
-          <p><strong>National Drought Mitigation Center</strong><br />University of Nebraska–Lincoln</p>
-          <p><span class="contact-icon">📍</span>3310 Holdrege Street</p>
-          <p><span class="contact-icon">✉</span>P.O. Box 830988<br/>Lincoln, NE 68583–0988</p>
-          <p><span class="contact-icon">@</span><a href="mailto:DroughtMonitor@unl.edu">DroughtMonitor@unl.edu</a></p>
-          <p><span class="contact-icon">☎</span><a href="tel:+14024726707">(402) 472-6707</a></p>
+          <p><strong>Water and Climate Lab</strong><br />Indian Institute of Technology Gandhinagar</p>
+          <p><span class="contact-icon">📍</span>Palaj, Gandhinagar</p>
+          <p><span class="contact-icon">@</span><a href="mailto:wcl@iitgn.ac.in">wcl@iitgn.ac.in</a></p>
         </div>
         <div>
           <h3>Maps</h3>
@@ -150,18 +84,14 @@
           <ul>
             <li><a href="data.html">Data Download</a></li>
             <li><a href="summary.html">National Summary</a></li>
-            <li><a href="about.html">What is the USDM?</a></li>
-            <li><a href="about.html">About the Data</a></li>
+            <li><a href="about.html">What is the IDM?</a></li>
             <li><a href="contact.html">Contact Authors</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-copy">
-        © 2026 National Drought Mitigation Center · University of Nebraska–Lincoln · USDM Clone — for demonstration purposes
+        © 2026 Water and Climate Lab · Indian Institute of Technology Gandhinagar · For research and demonstration purposes
       </div>
     </div>
   </footer>
-
-  <script src="assets/app.js"></script>
-</body>
-</html>
+</body></html>

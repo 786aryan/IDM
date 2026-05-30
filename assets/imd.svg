@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 150" width="320" height="150" role="img" aria-label="India Meteorological Department">
+  <g fill="#ffffff" font-family="Georgia, 'Times New Roman', serif">
+    <circle cx="160.0" cy="46" r="34" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="160.0" y="46" text-anchor="middle" dominant-baseline="central" font-size="26" font-weight="700" letter-spacing="1">IMD</text>
+    <text x="160.0" y="108" text-anchor="middle" font-size="15.5" font-weight="600" font-family="'Source Sans 3', Arial, sans-serif">India</text>
+    <text x="160.0" y="128" text-anchor="middle" font-size="15.5" font-weight="600" font-family="'Source Sans 3', Arial, sans-serif">Meteorological Department</text>
+  </g>
+</svg>
