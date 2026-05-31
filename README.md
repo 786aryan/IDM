@@ -73,6 +73,20 @@ PapaParse and AlaSQL are vendored under `assets/vendor/` (no CDN; works offline)
 - **data-download.html** — download links for every raw data product.
 - **summary.html / about.html / contact.html** — India-specific narrative pages.
 
+## Hydrological Outlook
+
+An image/PDF section built from the `IHO_Pipeline_Final.ipynb` outputs in
+`Hydrologic_Outlook/Output/` (the interactive drought maps are unchanged):
+
+- **hydro.html** — per-variable dashboards (Rainfall, Temperature, Relative Wetness,
+  Total Runoff, Evapotranspiration), shown as the composite PNG the pipeline renders.
+- **hydro-maps.html** — the individual maps that make up each dashboard, full-size, with a lightbox.
+- **hydro-reports.html** — the PDF report archive (inline preview + download).
+
+Driven by `assets/hydro/hydro-manifest.json` and `assets/hydro/reports-manifest.json` via
+`assets/hydro/hydro.js`. To publish a new month: add the PNGs/PDF under
+`Hydrologic_Outlook/Output/` and add the corresponding entries to the two manifests.
+
 ## Data
 
 ```

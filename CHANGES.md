@@ -1,62 +1,68 @@
-# India Drought Monitor — Change Summary (v5)
+# India Drought Monitor — Change Summary (v6: Hydrological Outlook)
 
-Five UI/feature additions on top of the WCL-colour-mapped live build.
+This revision integrates the **India Hydrological Outlook (IHO)** outputs produced by the
+`IHO_Pipeline_Final.ipynb` notebook, and adds a PDF report archive. The existing interactive
+drought maps are unchanged — the IHO content is image/PDF-based, as the pipeline already renders it.
 
-## 1. State name in the side panel
+## New section: Hydrological Outlook (3 pages + nav entry)
 
-A new "State" card sits at the top of the right-hand rail (above the Cursor Readout) on
-the Current, Conditions and Archive map pages. It shows the name of the state under the
-cursor, updating live as you move over the map (engine already tracks
-`state.hoveredStateName`; `wireReadout` now also fills `#ro-state-big`).
+A new top-level nav item **"Hydrological Outlook"** links a three-page section:
 
-## 2. Greyscale option
+1. **hydro.html — Dashboards.** Shows the composite dashboard PNG for each variable, laid out
+   exactly as the pipeline renders it (current month + four prior months on top; forecast,
+   same-month-last-year, and the driest/wettest analogues on the bottom; percentile colourbar in
+   the middle). A variable selector switches between the five variables; the dashboard can be
+   opened full-size or downloaded as PNG. Mirrors the look of indiahydrolook.in.
 
-A "Greyscale" checkbox renders the map in perceptual-luminance grey. It is implemented in
-the engine's colour function (`getOfficialCDIColor` converts the WCL colour to grey when
-`state.grayscale` is on), so the on-screen map AND any exported PNG/GIF are greyscale.
-Exposed via `setGrayscale()` / `getGrayscale()`. Added to Current, Conditions, Archive and
-Animations pages.
+2. **hydro-maps.html — Individual Maps.** The individual maps that make up each dashboard, shown
+   separately at full size in a responsive grid (task: "view the individual maps … shown
+   collectively in the dashboard"). The current-month and forecast panels are tagged; clicking any
+   map opens it in a lightbox. Deep-links per variable via `#<Variable>` (the dashboards page links
+   straight here for the selected variable).
 
-## 3. Union Territories removed from dropdowns
+3. **hydro-reports.html — PDF Reports.** The full PDF report archive (task: "the whole pdf archive
+   should be visible to the user for downloading"). A dated list on the left; selecting one previews
+   it inline in an `<iframe>` and exposes a direct **Download PDF** button. Each list row also has a
+   one-click download icon. A graceful fallback link appears if a browser blocks inline PDFs.
 
-The "Jump to State" dropdowns now list states only. A `UT_IDS` set in
-`drought-map.app.js` (Andaman & Nicobar, Chandigarh, Dadara & Nagar Havelli, Daman & Diu,
-Jammu & Kashmir, Lakshadweep, NCT of Delhi, Puducherry) is filtered out in
-`wireStateSelect`. Placeholder and readout labels updated from "State / UT" to "State".
-(The map itself and the data-tables page still include all regions; only the dropdowns
-changed, per request.)
+### Variables included
+Rainfall, Surface Air Temperature, Relative Wetness (soil moisture), Total Runoff, and
+Evapotranspiration. **Streamflow at Gauge Stations** and **Streamflow at Stream Network** are
+excluded per the data notes ("To Be Removed").
 
-## 4. Interpolation slider on the Animations page
+## How it's wired (data-driven, no build step)
 
-The "Detail" interpolation slider (driving Pranav's `INTERP`) is now also present in the
-Animations control panel, alongside the date range and frame-rate inputs.
+- `assets/hydro/hydro-manifest.json` — lists the five variables, each with its dashboard file and
+  its nine individual-map files (with display labels and current/forecast role tags). Generated
+  from the actual files in `Hydrologic_Outlook/Output/All_Maps/`.
+- `assets/hydro/reports-manifest.json` — the PDF archive, newest first, with dates parsed from the
+  `Hydrolook_YYYY_MM_DD.pdf` filenames. Add a new PDF + one line here to publish the next month.
+- `assets/hydro/hydro.js` — `IHO.initDashboards / initMaps / initReports`. Handles URL-encoding of
+  the image filenames (which contain spaces and parentheses), the variable selector, the lightbox,
+  and the PDF viewer.
+- `assets/hydro/hydro.css` — styling, using the site's existing design tokens.
 
-## 5. Download map (PNG) and animation (GIF)
+## Files / assets added
 
-- **PNG** — a "Download PNG" button on the Current, Conditions, Archive and Animations
-  pages flattens the data layer onto a white background and downloads a clean
-  `india-drought-*.png` (no HUD overlay). New engine methods `toPNGDataURL()` /
-  `captureRasterCanvas()`.
-- **GIF (animations only)** — a "GIF" button on the Animations page iterates the chosen
-  week range, renders each frame, captures the flattened raster, and encodes an animated
-  `india-drought-animation.gif` at the chosen frame rate, with a progress indicator.
-  Uses gif.js (vendored locally at `assets/vendor/gif.js` + `gif.worker.js`).
+- `hydro.html`, `hydro-maps.html`, `hydro-reports.html`
+- `assets/hydro/{hydro.js, hydro.css, hydro-manifest.json, reports-manifest.json}`
+- `Hydrologic_Outlook/Output/Dashboards/*.png` (5 dashboards)
+- `Hydrologic_Outlook/Output/All_Maps/<Variable>/*.png` (5 variables × 9 maps)
+- `Hydrologic_Outlook/Output/PDF_Archive/Hydrolook_2026_02_28.pdf`
 
-## Files touched
+## Nav & footer
 
-- `drought-map.engine.js` — grayscale in colour function + `state.grayscale`/`opts.grayscale`;
-  API: `setGrayscale`/`getGrayscale`, `toPNGDataURL`, `captureRasterCanvas`.
-- `drought-map.app.js` — UT filter in `wireStateSelect`; `stateBig` readout; greyscale,
-  PNG-download and (existing) interp-slider wiring in `mountMap`.
-- `drought-map.css` — state-name card, GIF status styles.
-- `index.html`, `conditions.html`, `archive.html` — greyscale checkbox, Download PNG,
-  state-name card, label fixes, config wiring.
-- `animations.html` — interp slider, greyscale, PNG + GIF buttons, GIF builder; loads gif.js.
-- New: `assets/vendor/gif.js`, `assets/vendor/gif.worker.js`.
+Nav is now 8 items (added "Hydrological Outlook"). The footer gains a "Hydrological Outlook" column
+(Dashboards / Individual Maps / PDF Reports). Nav + footer were regenerated consistently across all
+17 pages.
 
 ## Validation
 
-All 14 pages load with intact chrome and zero JS errors. Verified headless: state name
-shows on hover; greyscale toggles the rendered map (top colour 255,255,0 -> 226,226,226);
-UTs absent from dropdowns (29 -> states only); interp slider present on Animations; a real
-275 KB GIF and a PNG both download. Serve over HTTP; runs on GitHub Pages.
+All 17 pages load with intact chrome, a consistent 8-item nav, and **zero JS errors**. Verified
+headless: dashboards switch per variable and load (3080-px PNGs); all nine individual maps load per
+variable with current/forecast tags and a working lightbox; the PDF archive lists and previews the
+report and the download links resolve (HTTP 200). The interactive drought maps from earlier versions
+are untouched and still render.
+
+> Note: like the rest of the site, serve over HTTP (the pages fetch JSON/PNG/PDF). On `file://`,
+> inline PDF preview and the manifests won't load. Runs on GitHub Pages as-is.
