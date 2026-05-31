@@ -584,15 +584,17 @@ p { margin: 0 0 14px; }
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 56px;
+  gap: 28px;
   flex-wrap: wrap;
   margin-bottom: 24px;
 }
 .partner-logos img {
-  height: 72px;
+  height: 56px;
   width: auto;
-  opacity: .92;
-  filter: brightness(1) invert(0);
+  background: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  object-fit: contain;
 }
 .partner-blurb {
   text-align: center;
@@ -835,4 +837,58 @@ hr.soft {
   color: var(--usdm-charcoal);
   letter-spacing: .02em;
   text-transform: uppercase;
+}
+
+/* =============================================================================
+ * MOBILE FRIENDLINESS (consolidated)
+ * ========================================================================== */
+
+/* Never let anything cause a horizontal scrollbar on the page. */
+html, body { max-width: 100%; overflow-x: hidden; }
+img, svg, canvas, iframe, table { max-width: 100%; }
+
+/* Tablet / small laptop */
+@media (max-width: 900px) {
+  :root { --nav-h: 50px; }
+  .usdm-main { padding-left: 16px; padding-right: 16px; }
+  .usdm-nav a { font-size: 15px; padding: 0 14px; }
+  .usdm-title { font-size: 22px; }
+  /* let map toolbars wrap instead of overflowing */
+  .idm-toolbar, .hydro-toolbar, .idm-summary-controls { flex-wrap: wrap; }
+  /* the side rail drops below the map on narrow screens */
+  .idm-viewer-grid { grid-template-columns: 1fr; }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+  .usdm-header-inner { padding: 0 16px; }
+  .usdm-title { font-size: 20px; }
+  .usdm-nav-inner { padding: 0 12px; }
+  .usdm-nav a { font-size: 14px; padding: 0 12px; }
+  .page-title { font-size: 28px; }
+
+  /* generic content tables scroll horizontally inside their own box */
+  .table-wrap, .idm-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { font-size: 13px; }
+
+  /* map control panels: full-width, comfortable tap targets */
+  .idm-tool-group, .idm-summary-controls .idm-tool-group { width: 100%; }
+  .idm-tool-group select, .idm-summary-controls select, .hydro-toolbar select { width: 100%; min-width: 0; }
+  .idm-btn { padding: 9px 12px; }
+
+  /* footer columns stack */
+  .contact-block { grid-template-columns: 1fr !important; gap: 18px; }
+  .partner-logos { gap: 18px; flex-wrap: wrap; justify-content: center; }
+
+  /* chatbot becomes a near-full-screen sheet */
+  .idm-chat-panel {
+    right: 0; bottom: 0; width: 100vw; max-width: 100vw;
+    height: 88vh; max-height: 88vh; border-radius: 14px 14px 0 0;
+  }
+  .idm-chat-launch { right: 14px; bottom: 14px; }
+}
+
+/* Honour users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="assets/interactive/drought-map.css" />
   <script src="assets/vendor/papaparse.min.js"></script>
   <script src="assets/vendor/alasql.min.js"></script>
+  <link rel="stylesheet" href="assets/ai/idm-ai.css" />
 </head>
 <body>
   <header class="usdm-header"><div class="usdm-header-inner"><h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1></div></header>
@@ -61,11 +62,9 @@
     <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/imd.svg" alt="India Meteorological Department" />
-        <img src="assets/cwc.svg" alt="Central Water Commission" />
-        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
-        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
-        <img src="assets/nasa.svg" alt="NASA" />
+        <img src="assets/logos/wcl.png" alt="Water and Climate Lab, IIT Gandhinagar" />
+        <img src="assets/logos/iitgn.png" alt="Indian Institute of Technology Gandhinagar" />
+        <img src="assets/logos/imd.png" alt="India Meteorological Department" />
       </div>
       <p class="partner-blurb">
         The India Drought Monitor is developed by the Water and Climate Lab at the Indian
@@ -119,10 +118,15 @@
   <script>
     var STATE_GRID=null, NAMES=null, currentRows=[];
 
-    function classify(v, mn, mx) {
-      var n=(v-mn)/((mx-mn)||1);
-      if(n<0.12) return "D4"; if(n<0.25) return "D3"; if(n<0.40) return "D2";
-      if(n<0.55) return "D1"; if(n<0.75) return "D0"; return "None";
+    // Classify by ABSOLUTE CDI thresholds (same as the map engine + WCL legend),
+    // not a per-week min/max normalisation.
+    function classify(v) {
+      if (v > -0.5) return "None";
+      if (v > -0.8) return "D0";
+      if (v > -1.3) return "D1";
+      if (v > -1.6) return "D2";
+      if (v > -2.0) return "D3";
+      return "D4";
     }
 
     async function loadStateGrid() {
@@ -136,7 +140,6 @@
     async function computeForDate(compact) {
       var cdi = await alasql.promise("SELECT CAST([0] AS FLOAT) AS lat, CAST([1] AS FLOAT) AS lng, CAST([2] AS FLOAT) AS val FROM csv('./data/Drough_TS/CDI_"+compact+".txt', {headers:false, separator:' '}) WHERE [0] != 'NaN' AND [1] != 'NaN' AND [2] != 'NaN'");
       if(!cdi.length) return [];
-      var mn=Math.min.apply(null,cdi.map(function(d){return d.val;})), mx=Math.max.apply(null,cdi.map(function(d){return d.val;}));
       // index CDI by rounded lat/lng (0.25 grid centres at x.125)
       var idx={};
       cdi.forEach(function(p){ idx[p.lat.toFixed(3)+","+p.lng.toFixed(3)]=p.val; });
@@ -152,7 +155,7 @@
       var tally={};
       STATE_GRID.forEach(function(c){
         var v=nearest(c.lat,c.lng); if(v==null||isNaN(v)) return;
-        var cls=classify(v,mn,mx);
+        var cls=classify(v);
         if(!tally[c.sid]) tally[c.sid]={None:0,D0:0,D1:0,D2:0,D3:0,D4:0,tot:0};
         tally[c.sid][cls]++; tally[c.sid].tot++;
       });
@@ -199,4 +202,6 @@
       document.getElementById("sort-select").addEventListener("change", function(){ render(currentRows); });
     });
   </script>
+  <script src="assets/ai/idm-ai.js"></script>
+  <script src="assets/ai/idm-chatbot.js"></script>
 </body></html>

@@ -25,16 +25,17 @@
   border-radius: 4px;
   padding: 16px;
   position: relative;
-  /* On narrow screens the native 840px canvas scrolls instead of scaling,
-     so core mouse hit-testing stays pixel-perfect. */
-  overflow-x: auto;
-  overflow-y: hidden;
+  /* The canvas scales responsively (mouse hit-testing is scale-corrected in the
+     engine), so the stage fits the panel without horizontal scrolling. */
+  overflow: hidden;
 }
 
 .idm-canvas-stage {
   position: relative;
   width: 840px;
-  height: 840px;
+  max-width: 100%;          /* never overflow the viewport / column */
+  aspect-ratio: 1 / 1;      /* keep the square aspect ratio when scaled down */
+  height: auto;
   margin: 0 auto;
   background: #fff;
 }
@@ -42,8 +43,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 840px;
-  height: 840px;
+  width: 100%;              /* fill the (responsive) stage; backing stays 840 */
+  height: 100%;
 }
 /* Core CSS contract (from Pranav's index.html): raster blends under vector,
    vector layer captures pointer input on top. */
@@ -391,8 +392,8 @@
 }
 @media (max-width: 1040px) { .idm-compare-grid { grid-template-columns: 1fr; } }
 .idm-compare-panel { padding: 12px; }
-.idm-stage-sm { width: 520px; height: 520px; max-width: 100%; }
-.idm-stage-sm canvas { width: 520px; height: 520px; }
+.idm-stage-sm { width: 520px; max-width: 100%; aspect-ratio: 1 / 1; height: auto; }
+.idm-stage-sm canvas { width: 100%; height: 100%; }
 .idm-map-loading-sm {
   position: absolute; inset: 12px; display: flex; align-items: center; justify-content: center;
   background: var(--usdm-bg-tint); border: 1px dashed var(--usdm-border); border-radius: 4px; z-index: 20;
@@ -483,4 +484,9 @@
   margin: 4px 0 18px; padding: 8px 14px; font-size: 13.5px; font-weight: 600;
   background: var(--usdm-bg-tint); border: 1px solid var(--usdm-border);
   border-radius: 6px; color: var(--usdm-ink, #3a3431); display: inline-block;
+}
+
+/* Disabled control buttons (e.g. Play while an animation is running) */
+.idm-btn:disabled, .idm-btn.is-disabled {
+  opacity: 0.5; cursor: not-allowed; pointer-events: none;
 }

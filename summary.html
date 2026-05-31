@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
   
+  <link rel="stylesheet" href="assets/ai/idm-ai.css" />
 </head>
 <body>
 
@@ -32,101 +33,27 @@
   <main class="usdm-main">
 <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> Summary</div>
 
-    <h1 class="page-title">Summary</h1>
+    <h1 class="page-title">National Drought Summary</h1>
 
-    <div class="form-row" style="grid-template-columns: 280px 1fr;">
-      <div class="form-group">
-        <span class="form-label">Date</span>
-        <select aria-label="Choose summary date">
-              <option value="May 19, 2026" selected>May 19, 2026</option>
-              <option value="May 12, 2026">May 12, 2026</option>
-              <option value="May 5, 2026">May 5, 2026</option>
-              <option value="April 28, 2026">April 28, 2026</option>
-              <option value="April 21, 2026">April 21, 2026</option>
-              <option value="April 14, 2026">April 14, 2026</option>
-              <option value="April 7, 2026">April 7, 2026</option>
-              <option value="March 31, 2026">March 31, 2026</option>
-              <option value="March 24, 2026">March 24, 2026</option>
-              <option value="March 17, 2026">March 17, 2026</option>
-              <option value="March 10, 2026">March 10, 2026</option>
-              <option value="March 3, 2026">March 3, 2026</option>
-              <option value="February 24, 2026">February 24, 2026</option>
-              <option value="February 17, 2026">February 17, 2026</option>
-              <option value="February 10, 2026">February 10, 2026</option>
-              <option value="February 3, 2026">February 3, 2026</option>
-        </select>
+    <div class="idm-summary-ai">
+      <div class="idm-summary-controls">
+        <div class="idm-tool-group">
+          <label class="idm-tool-label" for="sum-date">Week</label>
+          <select id="sum-date" aria-label="Choose summary week"></select>
+        </div>
+        <div class="idm-summary-controls-spacer"></div>
+        <button type="button" class="idm-btn ghost" id="sum-download">&#11015; Download summary</button>
       </div>
-      <div></div>
+      <div class="idm-summary-box">
+        <h2 class="idm-summary-title" id="sum-title">National Drought Summary</h2>
+        <div class="idm-summary-text" id="sum-text">Loading the latest summary&hellip;</div>
+        <p class="idm-summary-author">
+          <strong>Water and Climate Lab</strong>, Indian Institute of Technology Gandhinagar
+        </p>
+      </div>
     </div>
 
-    <h2 style="margin-top:8px;">National Drought Summary for May 19, 2026</h2>
 
-    <div class="summary-section">
-      
-      <h3>Summary</h3>
-      <p>During the week, large parts of peninsular and central India continued to show rainfall
-        deficits as the pre-monsoon period advanced, while the eastern Gangetic plains saw modest
-        improvement. The Combined Drought Index pointed to severe-to-extreme conditions over
-        interior Maharashtra, northern Karnataka, Telangana and parts of Rajasthan, driven by a
-        combination of low standardised precipitation, declining soil moisture and reduced runoff.
-        Reservoir storage across several western and southern basins remained below the ten-year
-        average, sustaining short-term agricultural stress even where surface temperatures eased.</p>
-
-      <h3>Northwest India</h3>
-      <p>Persistent rainfall deficits kept much of western Rajasthan and parts of Gujarat in
-        severe (D2) to extreme (D3) drought, with the standardised precipitation and soil-moisture
-        indices both well below normal. Pockets of Haryana and southern Punjab showed abnormal
-        dryness (D0) to moderate (D1) conditions. Irrigated tracts fared better than rain-fed
-        areas, where the drying of the upper soil layer raised crop-stress signals in the index.</p>
-
-      <h3>Central India</h3>
-      <p>Madhya Pradesh and interior Maharashtra remained among the most affected regions.
-        Extreme (D3) drought persisted across parts of Vidarbha and Marathwada, while large areas
-        of Madhya Pradesh sat in the moderate (D1) to severe (D2) range. Low runoff and depleted
-        soil moisture were the dominant contributors to the Combined Drought Index here, and
-        reservoir levels in several Godavari and Tapi sub-basins stayed below their seasonal
-        normals.</p>
-
-      <h3>Peninsular &amp; South India</h3>
-      <p>Northern Karnataka, Telangana and Rayalaseema in Andhra Pradesh showed severe (D2) to
-        extreme (D3) conditions, with rainfall well short of normal for the period. Coastal and
-        southern Tamil Nadu were comparatively better, holding near-normal to abnormally dry (D0)
-        conditions. Kerala and the Western Ghats remained largely outside drought designations,
-        reflecting their high baseline moisture.</p>
-
-      <h3>East &amp; Northeast India</h3>
-      <p>Improved soil moisture eased conditions across the eastern Gangetic plains, with parts of
-        Bihar, Jharkhand and West Bengal stepping back from abnormal dryness (D0). The northeastern
-        states generally remained free of drought designations, supported by their characteristically
-        high rainfall and moisture, though isolated pockets showed short-term dryness.</p>
-
-      <h3>Hilly &amp; Northern Regions</h3>
-      <p>The Himalayan states — Himachal Pradesh, Uttarakhand and Jammu &amp; Kashmir — showed
-        mostly near-normal conditions for the season, with the index reflecting adequate moisture
-        at higher elevations. Localised dryness appeared in a few lower-elevation valleys but did
-        not rise to widespread drought.</p>
-
-      <h3>Island Territories</h3>
-      <p>The Andaman &amp; Nicobar Islands and Lakshadweep remained outside drought designations,
-        consistent with their high baseline rainfall. Index values were near normal, with no clear
-        moisture deficits observed over the week.</p>
-
-      <h3>Looking Ahead</h3>
-      <p>The short-range outlook for the coming weeks (reflected in the 7-, 15- and 30-day forecast
-        indices on the monitor) suggests that drought conditions across central and peninsular
-        India are likely to persist until the onset and progression of the southwest monsoon brings
-        widespread rainfall. Until then, rain-fed regions in Maharashtra, Karnataka, Telangana and
-        Rajasthan are expected to remain under the greatest short-term stress, while irrigated and
-        higher-moisture regions hold steadier. Conditions will be reassessed as new data arrive.</p>
-
-
-      <h3>Author(s):</h3>
-      <p style="font-style:italic;">
-        <strong>Water and Climate Lab</strong>, IIT Gandhinagar
-      </p>
-    </div>
-
-    <hr class="soft" />
 
     <h2>Dryness Categories</h2>
     <p>
@@ -151,11 +78,9 @@
     <footer class="usdm-footer">
     <div class="usdm-footer-inner">
       <div class="partner-logos">
-        <img src="assets/imd.svg" alt="India Meteorological Department" />
-        <img src="assets/cwc.svg" alt="Central Water Commission" />
-        <img src="assets/nrsc.svg" alt="ISRO / National Remote Sensing Centre" />
-        <img src="assets/iitgn.svg" alt="Water and Climate Lab, IIT Gandhinagar" />
-        <img src="assets/nasa.svg" alt="NASA" />
+        <img src="assets/logos/wcl.png" alt="Water and Climate Lab, IIT Gandhinagar" />
+        <img src="assets/logos/iitgn.png" alt="Indian Institute of Technology Gandhinagar" />
+        <img src="assets/logos/imd.png" alt="India Meteorological Department" />
       </div>
       <p class="partner-blurb">
         The India Drought Monitor is developed by the Water and Climate Lab at the Indian
@@ -205,5 +130,65 @@
   </footer>
 
   <script src="assets/app.js"></script>
+  <script src="assets/vendor/papaparse.min.js"></script>
+  <script src="assets/vendor/alasql.min.js"></script>
+  <script src="assets/ai/idm-ai.js"></script>
+  <script src="assets/ai/idm-chatbot.js"></script>
+  <script>
+    // Summary page: load dated summaries from the archive, with a week picker and download.
+    (function () {
+      var textEl = document.getElementById("sum-text");
+      var titleEl = document.getElementById("sum-title");
+      var dateSel = document.getElementById("sum-date");
+      var dlBtn = document.getElementById("sum-download");
+      var ARCHIVE = "data/summaries/";
+      var current = { label: "", date: "", body: "" };
+
+      function stripHeader(t) { return t.replace(/^#[^\n]*\n+/, "").trim(); }
+
+      function show(item) {
+        textEl.textContent = "Loading\u2026";
+        fetch(ARCHIVE + item.file).then(function (r) {
+          if (!r.ok) throw new Error(); return r.text();
+        }).then(function (t) {
+          current = { label: item.label, date: item.date, body: stripHeader(t) };
+          titleEl.textContent = "National Drought Summary \u2014 " + item.label;
+          textEl.textContent = current.body;
+        }).catch(function () {
+          textEl.textContent = "This summary could not be loaded.";
+        });
+      }
+
+      fetch(ARCHIVE + "index.json").then(function (r) { return r.json(); }).then(function (j) {
+        var list = (j && j.summaries) || [];
+        if (!list.length) { textEl.textContent = "No summaries are available yet."; return; }
+        list.forEach(function (it, i) {
+          var o = document.createElement("option");
+          o.value = it.file; o.textContent = it.label;
+          if (i === 0) o.selected = true;
+          dateSel.appendChild(o);
+        });
+        show(list[0]);
+        dateSel.addEventListener("change", function () {
+          var it = list.filter(function (x) { return x.file === dateSel.value; })[0];
+          if (it) show(it);
+        });
+      }).catch(function () {
+        textEl.textContent = "The summary archive could not be loaded.";
+      });
+
+      dlBtn.addEventListener("click", function () {
+        if (!current.body) return;
+        var header = "India Drought Monitor \u2014 National Drought Summary\n" +
+                     "Week ending " + (current.label || current.date) + "\n\n";
+        var blob = new Blob([header + current.body + "\n"], { type: "text/plain" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url; a.download = "IDM_summary_" + (current.date || "latest") + ".txt";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
 </body>
 </html>

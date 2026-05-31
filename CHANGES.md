@@ -1,68 +1,62 @@
-# India Drought Monitor — Change Summary (v6: Hydrological Outlook)
+# India Drought Monitor — Change Summary (v9: drought-classification bug fix)
 
-This revision integrates the **India Hydrological Outlook (IHO)** outputs produced by the
-`IHO_Pipeline_Final.ipynb` notebook, and adds a PDF report archive. The existing interactive
-drought maps are unchanged — the IHO content is image/PDF-based, as the pipeline already renders it.
+This revision fixes a serious data bug you caught in the chatbot, and hardens the
+question-answering pipeline so answers stay grounded in the data.
 
-## New section: Hydrological Outlook (3 pages + nav entry)
+## The bug: wrong drought percentages (per-state + chatbot)
 
-A new top-level nav item **"Hydrological Outlook"** links a three-page section:
+The per-state breakdown classified each CDI grid cell by **normalising to that week's
+min/max** instead of the real CDI thresholds. That inverted the picture — e.g. Rajasthan
+showed as "98.3% in drought" when it is actually one of the LEAST affected states. The
+chatbot then sometimes read a single state's value and reported it as the national figure
+("98.3% of India is in drought"), which is what you saw.
 
-1. **hydro.html — Dashboards.** Shows the composite dashboard PNG for each variable, laid out
-   exactly as the pipeline renders it (current month + four prior months on top; forecast,
-   same-month-last-year, and the driest/wettest analogues on the bottom; percentile colourbar in
-   the middle). A variable selector switches between the five variables; the dashboard can be
-   opened full-size or downloaded as PNG. Mirrors the look of indiahydrolook.in.
+### Fix
+`classify()` now uses the SAME absolute CDI thresholds as the map engine and the WCL legend:
 
-2. **hydro-maps.html — Individual Maps.** The individual maps that make up each dashboard, shown
-   separately at full size in a responsive grid (task: "view the individual maps … shown
-   collectively in the dashboard"). The current-month and forecast panels are tagged; clicking any
-   map opens it in a lightbox. Deep-links per variable via `#<Variable>` (the dashboards page links
-   straight here for the selected variable).
+  > -0.5 Normal · -0.5..-0.8 D0 · -0.8..-1.3 D1 · -1.3..-1.6 D2 · -1.6..-2.0 D3 · <= -2.0 D4
 
-3. **hydro-reports.html — PDF Reports.** The full PDF report archive (task: "the whole pdf archive
-   should be visible to the user for downloading"). A dated list on the left; selecting one previews
-   it inline in an `<iframe>` and exposes a direct **Download PDF** button. Each list row also has a
-   one-click download icon. A graceful fallback link appears if a browser blocks inline PDFs.
+Applied in BOTH places that used the old normalisation:
+- `assets/ai/idm-ai.js` (the chatbot's `drought_state_latest` table)
+- `data-tables.html` (the per-state table page — it had the same bug and was also wrong)
 
-### Variables included
-Rainfall, Surface Air Temperature, Relative Wetness (soil moisture), Total Runoff, and
-Evapotranspiration. **Streamflow at Gauge Stations** and **Streamflow at Stream Network** are
-excluded per the data notes ("To Be Removed").
+After the fix the numbers reconcile with the national series: nationally ~15.3% is in
+drought (84.7% normal); the most-affected states are small/hilly regions (Delhi ~52%,
+Arunachal/J&K ~38-40%), and Gujarat / West Bengal / Rajasthan are correctly near 0%.
 
-## How it's wired (data-driven, no build step)
+## Hardening the chatbot so it doesn't "free-form"
 
-- `assets/hydro/hydro-manifest.json` — lists the five variables, each with its dashboard file and
-  its nine individual-map files (with display labels and current/forecast role tags). Generated
-  from the actual files in `Hydrologic_Outlook/Output/All_Maps/`.
-- `assets/hydro/reports-manifest.json` — the PDF archive, newest first, with dates parsed from the
-  `Hydrolook_YYYY_MM_DD.pdf` filenames. Add a new PDF + one line here to publish the next month.
-- `assets/hydro/hydro.js` — `IHO.initDashboards / initMaps / initReports`. Handles URL-encoding of
-  the image filenames (which contain spaces and parentheses), the variable selector, the lightbox,
-  and the PDF viewer.
-- `assets/hydro/hydro.css` — styling, using the site's existing design tokens.
+You also noticed it answered without really using a query. Three changes make answers
+strictly data-grounded:
 
-## Files / assets added
+1. **Clearer table-selection rules in the schema.** National questions ("how much of India
+   is in drought") MUST use `drought_timeseries` filtered to the latest week ('in drought'
+   = d0_pct, 'normal' = normal_pct); the rules now explicitly say to NEVER read a national
+   figure from the per-state table, and never present one state's value as national.
+2. **Stricter answer prompt.** The model is told every number in its answer must appear
+   verbatim in the returned rows — no estimating, recalling, or inferring from general
+   knowledge — and to say it doesn't have a figure rather than guess.
+3. The read-only single-SELECT guard and one-retry behaviour are unchanged.
 
-- `hydro.html`, `hydro-maps.html`, `hydro-reports.html`
-- `assets/hydro/{hydro.js, hydro.css, hydro-manifest.json, reports-manifest.json}`
-- `Hydrologic_Outlook/Output/Dashboards/*.png` (5 dashboards)
-- `Hydrologic_Outlook/Output/All_Maps/<Variable>/*.png` (5 variables × 9 maps)
-- `Hydrologic_Outlook/Output/PDF_Archive/Hydrolook_2026_02_28.pdf`
+Verified headless: for "How much of India is in drought right now?" the pipeline now runs
+`SELECT normal_pct, d0_pct FROM drought_timeseries ORDER BY date DESC LIMIT 1`, passes
+`{normal_pct: 84.7, d0_pct: 15.3}` to the answer step, and replies "about 15.3% of India is
+in drought, 84.7% normal."
 
-## Nav & footer
+## Files touched
 
-Nav is now 8 items (added "Hydrological Outlook"). The footer gains a "Hydrological Outlook" column
-(Dashboards / Individual Maps / PDF Reports). Nav + footer were regenerated consistently across all
-17 pages.
+- `assets/ai/idm-ai.js` — absolute-threshold `classify()`; clarified schema rules; stricter answer system prompt.
+- `data-tables.html` — same `classify()` fix (removes the inverted per-state numbers).
 
 ## Validation
 
-All 17 pages load with intact chrome, a consistent 8-item nav, and **zero JS errors**. Verified
-headless: dashboards switch per variable and load (3080-px PNGs); all nine individual maps load per
-variable with current/forecast tags and a working lightbox; the PDF archive lists and previews the
-report and the download links resolve (HTTP 200). The interactive drought maps from earlier versions
-are untouched and still render.
+All 17 pages load with zero JS errors and the chatbot present. Per-state numbers now match
+the national series; the chatbot answers the national drought question correctly end-to-end
+(mocked model, since the LAN Ollama server isn't reachable from the build environment).
 
-> Note: like the rest of the site, serve over HTTP (the pages fetch JSON/PNG/PDF). On `file://`,
-> inline PDF preview and the manifests won't load. Runs on GitHub Pages as-is.
+## Note
+
+The LAN model still can't be exercised from here, so the live answer quality depends on
+qwen3.5:4b following the (now much stricter) prompts. If you ever see it stray, the cleanest
+next step is a tiny deterministic guard for the few most-common questions; say the word and
+I'll add it.

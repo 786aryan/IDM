@@ -641,22 +641,28 @@ function setupEventListeners() {
     
     C_vector.addEventListener("mousedown", (e) => {
         const rect = C_vector.getBoundingClientRect();
-        const x = e.clientX - rect.left - state.margin.left;
-        const y = e.clientY - rect.top - state.margin.top;
+        // Convert from displayed (CSS) pixels to canvas backing pixels so hit-testing
+        // stays correct even when the canvas is responsively scaled by CSS.
+        const sx = C_vector.width / rect.width;
+        const sy = C_vector.height / rect.height;
+        const px = (e.clientX - rect.left) * sx;
+        const py = (e.clientY - rect.top) * sy;
+        const x = px - state.margin.left;
+        const y = py - state.margin.top;
 
         if (e.button === 0) { // Left button
             if (x >= 0 && x <= state.plotWidth && y >= 0 && y <= state.plotHeight) {
                 if (state.zoomMode === "rect") {
                     // Rectangle-zoom mode: begin drawing a selection box.
                     state.isSelecting = true;
-                    state.startSelectX = e.clientX - rect.left;
-                    state.startSelectY = e.clientY - rect.top;
+                    state.startSelectX = px;
+                    state.startSelectY = py;
                     state.currentSelectX = state.startSelectX;
                     state.currentSelectY = state.startSelectY;
                     renderDynamicHUD();
                 } else {
                     // Click-state-zoom mode: zoom to the clicked state immediately.
-                    zoomToStateAtPixel(e.clientX - rect.left, e.clientY - rect.top);
+                    zoomToStateAtPixel(px, py);
                 }
             }
         } else if (e.button === 2) { // Right click clears viewport zoom
@@ -666,14 +672,18 @@ function setupEventListeners() {
 
     window.addEventListener("mousemove", (e) => {
         const rect = C_vector.getBoundingClientRect();
-        const x = e.clientX - rect.left - state.margin.left;
-        const y = e.clientY - rect.top - state.margin.top;
+        const sx = C_vector.width / rect.width;
+        const sy = C_vector.height / rect.height;
+        const px = (e.clientX - rect.left) * sx;
+        const py = (e.clientY - rect.top) * sy;
+        const x = px - state.margin.left;
+        const y = py - state.margin.top;
 
         // While drawing a rectangle-zoom box, track the live corner (clamped to the
         // plot area) so the box has real dimensions for the zoom math on mouseup.
         if (state.isSelecting) {
-            let cx = e.clientX - rect.left;
-            let cy = e.clientY - rect.top;
+            let cx = px;
+            let cy = py;
             cx = Math.max(state.margin.left, Math.min(state.margin.left + state.plotWidth, cx));
             cy = Math.max(state.margin.top, Math.min(state.margin.top + state.plotHeight, cy));
             state.currentSelectX = cx;
@@ -857,6 +867,13 @@ async function startCDIAnimation(startDateInput = "2021-07-14", endDateInput = "
     const intervalMs = 1000 / fps;
     state.isAnimating = true;
 
+    // Reflect playing state in the controls: disable Play, enable Stop.
+    if (opts.controls.btnStart) {
+        opts.controls.btnStart.disabled = true;
+        opts.controls.btnStart.classList.add("is-disabled");
+    }
+    if (opts.controls.btnStop) opts.controls.btnStop.disabled = false;
+
     async function animationTick() {
         if (!state.isAnimating) return;
 
@@ -898,6 +915,14 @@ async function startCDIAnimation(startDateInput = "2021-07-14", endDateInput = "
 function stopCDIAnimation() {
     state.isAnimating = false;
     state.currentAnimationDateStr = null;
+    // Restore the controls: re-enable Play, disable Stop.
+    if (opts.controls) {
+        if (opts.controls.btnStart) {
+            opts.controls.btnStart.disabled = false;
+            opts.controls.btnStart.classList.remove("is-disabled");
+        }
+        if (opts.controls.btnStop) opts.controls.btnStop.disabled = true;
+    }
     renderDynamicHUD();
 }
 
