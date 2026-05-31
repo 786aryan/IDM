@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PDF Reports | Hydrological Outlook | India Drought Monitor</title>
+  <title>Query the Data | India Drought Monitor</title>
   <meta name="theme-color" content="#da3910" />
   <link rel="stylesheet" href="assets/styles.css" />
-  <link rel="stylesheet" href="assets/hydro/hydro.css" />
   <link rel="stylesheet" href="assets/ai/idm-ai.css" />
+  <link rel="stylesheet" href="assets/query/query.css" />
 </head>
 <body>
   <header class="usdm-header"><div class="usdm-header-inner"><h1 class="usdm-title"><a href="index.html">India Drought Monitor</a></h1></div></header>
@@ -15,8 +15,8 @@
     <div class="usdm-nav-inner">
       <a href="index.html">Current</a>
       <a href="maps.html">Maps</a>
-      <a href="data.html">Data</a>
-      <a href="hydro.html" class="active">Hydrological Outlook</a>
+      <a href="data.html" class="active">Data</a>
+      <a href="hydro.html">Hydrological Outlook</a>
       <a href="summary.html">Summary</a>
       <a href="conditions.html">Conditions &amp; Outlooks</a>
       <a href="about.html">About</a>
@@ -24,32 +24,44 @@
     </div>
   </nav>
   <main class="usdm-main">
-    <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="hydro.html">Hydrological Outlook</a> <span class="sep">/</span> PDF Reports</div>
-    <h1 class="page-title">Hydrological Outlook Reports</h1>
-    <p style="font-size:16.5px;max-width:82ch;color:#3a3431;">
-      Each month the Water and Climate Lab compiles the full India Hydrological Outlook into a single
-      PDF report. Browse the archive below: pick a date to preview the report inline, or download any
-      report directly.
+    <div class="usdm-breadcrumbs"><a href="index.html">Home</a> <span class="sep">/</span> <a href="data.html">Data</a> <span class="sep">/</span> Query the Data</div>
+    <h1 class="page-title">Query the Data</h1>
+    <p style="font-size:16.5px;max-width:80ch;color:#3a3431;">
+      Run your own read-only <strong>SQL</strong> (AlaSQL dialect) against the same in-browser tables
+      that power the assistant: the national weekly drought series, the latest per-state breakdown,
+      and the monthly Hydrological Outlook means. Everything runs locally in your browser &mdash;
+      nothing is sent to a server. Only <code>SELECT</code> queries are allowed.
     </p>
 
-    <div class="hydro-reports-layout">
-      <aside class="hydro-reports-list" aria-label="Report archive">
-        <h2>Report Archive</h2>
-        <ul id="report-list"></ul>
-      </aside>
-
-      <section class="hydro-reports-viewer">
-        <div class="hydro-reports-viewer-bar">
-          <span id="viewer-title">Select a report</span>
-          <a class="idm-btn" id="report-download" href="#" download style="display:none;">&#11015; Download PDF</a>
-        </div>
-        <div class="hydro-pdf-frame-wrap">
-          <iframe id="report-frame" class="hydro-pdf-frame" title="Hydrological Outlook report preview"></iframe>
-          <div class="hydro-pdf-fallback" id="pdf-fallback" hidden>
-            <p>Your browser can't display the PDF inline. <a id="fallback-link" href="#" target="_blank" rel="noopener">Open it in a new tab</a> instead.</p>
+    <div class="query-layout">
+      <section class="query-main">
+        <div class="query-editor-wrap">
+          <textarea id="sql-input" spellcheck="false" aria-label="SQL query"
+            placeholder="SELECT * FROM drought_state_latest ORDER BY drought_pct DESC LIMIT 10"></textarea>
+          <div class="query-actions">
+            <button type="button" class="idm-btn" id="run-btn">&#9654; Run query</button>
+            <button type="button" class="idm-btn ghost" id="clear-btn">Clear</button>
+            <span class="query-status" id="query-status"></span>
+            <span class="query-actions-spacer"></span>
+            <button type="button" class="idm-btn ghost" id="csv-btn" disabled>&#11015; Download CSV</button>
           </div>
         </div>
+
+        <div class="query-result" id="query-result">
+          <p class="query-hint">Results will appear here. Try one of the example queries on the right, or write your own.</p>
+        </div>
       </section>
+
+      <aside class="query-side">
+        <div class="query-card">
+          <h2>Tables &amp; columns</h2>
+          <div id="schema-box" class="query-schema"></div>
+        </div>
+        <div class="query-card">
+          <h2>Example queries</h2>
+          <ul class="query-examples" id="examples"></ul>
+        </div>
+      </aside>
     </div>
   </main>
   <footer class="usdm-footer">
@@ -106,18 +118,10 @@
       </div>
     </div>
   </footer>
-  <script src="assets/hydro/hydro.js"></script>
-  <script>
-    window.addEventListener("DOMContentLoaded", function () {
-      IHO.initReports({
-        list: "report-list", frame: "report-frame", title: "viewer-title",
-        download: "report-download", fallback: "pdf-fallback", fallbackLink: "fallback-link"
-      });
-    });
-  </script>
   <script src="assets/vendor/papaparse.min.js"></script>
   <script src="assets/vendor/alasql.min.js"></script>
   <script src="assets/ai/idm-ai.js"></script>
   <script src="assets/ai/idm-chatbot.js"></script>
+  <script src="assets/query/query.js"></script>
 </body>
 </html>

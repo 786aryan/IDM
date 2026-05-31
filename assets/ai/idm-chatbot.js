@@ -93,6 +93,14 @@
       var m = elFromHTML('<div class="idm-msg idm-msg-bot idm-msg-think"><span class="idm-dot"></span><span class="idm-dot"></span><span class="idm-dot"></span></div>');
       log.appendChild(m); scroll(); return m;
     }
+    // Collapsible "show query" — opt-in transparency about the AlaSQL that was run.
+    function addQueryDetails(sql) {
+      if (!sql) return;
+      var d = elFromHTML(
+        '<details class="idm-chat-sql"><summary>Show query</summary><pre></pre></details>');
+      d.querySelector("pre").textContent = sql;   // textContent avoids any HTML-escaping issues
+      log.appendChild(d); scroll();
+    }
 
     async function submit() {
       var q = input.value.trim();
@@ -105,9 +113,11 @@
         thinking.remove();
         if (res.error) {
           addBot("Sorry, I couldn't find an answer to that. Try rephrasing your question.");
+          if (res.sql) addQueryDetails(res.sql);   // still show what it attempted
           // don't poison history with a failed turn
         } else {
           addBot(res.answer || "Sorry, I couldn't find an answer to that.");
+          if (res.sql) addQueryDetails(res.sql);
           // record the successful exchange so follow-up questions have context
           history.push({ role: "user", content: q });
           history.push({ role: "assistant", content: res.answer || "" });
